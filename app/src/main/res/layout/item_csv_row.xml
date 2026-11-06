@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:gravity="center_vertical"
+    android:orientation="horizontal"
+    android:paddingStart="@dimen/spacing_md"
+    android:paddingTop="@dimen/spacing_sm"
+    android:paddingEnd="@dimen/spacing_md"
+    android:paddingBottom="@dimen/spacing_sm">
+
+    <TextView
+        android:id="@+id/tv_csv_stt"
+        android:layout_width="36dp"
+        android:layout_height="wrap_content"
+        android:textColor="@color/text_tertiary"
+        android:textSize="@dimen/text_body_sm"
+        tools:text="1" />
+
+    <TextView
+        android:id="@+id/tv_csv_mssv"
+        android:layout_width="80dp"
+        android:layout_height="wrap_content"
+        android:textColor="@color/text_primary"
+        android:textSize="@dimen/text_body_sm"
+        android:textStyle="bold"
+        tools:text="20210001" />
+
+    <LinearLayout
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/tv_csv_name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="@color/text_primary"
+            android:textSize="@dimen/text_body_sm"
+            tools:text="Nguyễn Văn An" />
+
+        <TextView
+            android:id="@+id/tv_csv_error_reason"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="@color/status_absent"
+            android:textSize="11sp"
+            android:visibility="gone"
+            tools:text="Lỗi: Thiếu MSSV"
+            tools:visibility="visible" />
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/tv_csv_status_badge"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@drawable/bg_badge_present"
+        android:textColor="@color/on_status_present_container"
+        android:textSize="11sp"
+        android:textStyle="bold"
+        tools:text="Hợp lệ" />
+
+</LinearLayout>

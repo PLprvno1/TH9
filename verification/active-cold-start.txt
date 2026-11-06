@@ -1,0 +1,1 @@
+﻿PASS: the exact OPEN session and 1/3 attendance restored on cold startup after force-stop.

@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Brand / Primary Palette (Deep Indigo & Blues) -->
+    <color name="primary">#1E3A8A</color>
+    <color name="primary_variant">#172554</color>
+    <color name="primary_light">#3B82F6</color>
+    <color name="primary_container">#DBEAFE</color>
+    <color name="on_primary_container">#1E3A8A</color>
+    <color name="on_primary">#FFFFFF</color>
+
+    <!-- Secondary & Accent -->
+    <color name="secondary">#475569</color>
+    <color name="secondary_container">#F1F5F9</color>
+    <color name="on_secondary">#FFFFFF</color>
+    <color name="accent">#0284C7</color>
+
+    <!-- Semantic Status Colors -->
+    <!-- Có mặt (Present) - Green -->
+    <color name="status_present">#16A34A</color>
+    <color name="status_present_container">#DCFCE7</color>
+    <color name="on_status_present_container">#14532D</color>
+
+    <!-- Đi muộn (Late) - Amber -->
+    <color name="status_late">#D97706</color>
+    <color name="status_late_container">#FEF3C7</color>
+    <color name="on_status_late_container">#78350F</color>
+
+    <!-- Vắng (Absent) - Red -->
+    <color name="status_absent">#DC2626</color>
+    <color name="status_absent_container">#FEE2E2</color>
+    <color name="on_status_absent_container">#7F1D1D</color>
+
+    <!-- Chưa điểm danh (Unchecked) - Slate/Gray -->
+    <color name="status_unchecked">#64748B</color>
+    <color name="status_unchecked_container">#F1F5F9</color>
+    <color name="on_status_unchecked_container">#334155</color>
+
+    <!-- Neutral Backgrounds & Surfaces -->
+    <color name="background">#F8FAFC</color>
+    <color name="surface">#FFFFFF</color>
+    <color name="surface_card">#FFFFFF</color>
+    <color name="surface_variant">#F1F5F9</color>
+    <color name="divider">#E2E8F0</color>
+    <color name="border">#CBD5E1</color>
+
+    <!-- Text Colors -->
+    <color name="text_primary">#0F172A</color>
+    <color name="text_secondary">#475569</color>
+    <color name="text_tertiary">#94A3B8</color>
+    <color name="text_on_dark">#FFFFFF</color>
+
+    <!-- Scanner Overlays -->
+    <color name="scanner_overlay">#B3000000</color>
+    <color name="scanner_reticle">#60A5FA</color>
+    <color name="scanner_laser">#EF4444</color>
+    <color name="scanner_card_bg">#1E293B</color>
+
+    <!-- Basic -->
+    <color name="black">#FF000000</color>
+    <color name="white">#FFFFFFFF</color>
+</resources>

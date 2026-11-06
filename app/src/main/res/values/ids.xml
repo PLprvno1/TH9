@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <item name="context_view_profile" type="id" />
+    <item name="context_edit_student" type="id" />
+    <item name="context_link_card" type="id" />
+    <item name="context_change_status" type="id" />
+</resources>

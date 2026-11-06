@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Spacings -->
+    <dimen name="spacing_xxs">2dp</dimen>
+    <dimen name="spacing_xs">4dp</dimen>
+    <dimen name="spacing_sm">8dp</dimen>
+    <dimen name="spacing_md">12dp</dimen>
+    <dimen name="spacing_lg">16dp</dimen>
+    <dimen name="spacing_xl">20dp</dimen>
+    <dimen name="spacing_xxl">24dp</dimen>
+    <dimen name="spacing_xxxl">32dp</dimen>
+
+    <!-- Corner Radius -->
+    <dimen name="corner_sm">8dp</dimen>
+    <dimen name="corner_md">12dp</dimen>
+    <dimen name="corner_lg">16dp</dimen>
+    <dimen name="corner_full">999dp</dimen>
+
+    <!-- Touch target -->
+    <dimen name="min_touch_target">48dp</dimen>
+
+    <!-- Elevations -->
+    <dimen name="card_elevation">1dp</dimen>
+    <dimen name="card_elevation_hovered">4dp</dimen>
+
+    <!-- Text sizes -->
+    <dimen name="text_caption">12sp</dimen>
+    <dimen name="text_body_sm">13sp</dimen>
+    <dimen name="text_body">14sp</dimen>
+    <dimen name="text_body_lg">16sp</dimen>
+    <dimen name="text_title">18sp</dimen>
+    <dimen name="text_headline">22sp</dimen>
+    <dimen name="text_display">28sp</dimen>
+</resources>

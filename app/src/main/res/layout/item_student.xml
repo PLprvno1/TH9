@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginStart="@dimen/spacing_lg"
+    android:layout_marginTop="@dimen/spacing_xs"
+    android:layout_marginEnd="@dimen/spacing_lg"
+    android:layout_marginBottom="@dimen/spacing_xs"
+    android:clickable="true"
+    android:focusable="true"
+    android:foreground="?attr/selectableItemBackground"
+    app:cardCornerRadius="@dimen/corner_md"
+    app:cardElevation="0.5dp"
+    app:strokeColor="@color/divider"
+    app:strokeWidth="1dp">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        android:padding="@dimen/spacing_md">
+
+        <!-- Avatar Initial Circle -->
+        <FrameLayout
+            android:id="@+id/fl_avatar"
+            android:layout_width="44dp"
+            android:layout_height="44dp"
+            android:background="@drawable/bg_avatar_circle">
+
+            <TextView
+                android:id="@+id/tv_avatar_initial"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:gravity="center"
+                android:textColor="@color/white"
+                android:textSize="18sp"
+                android:textStyle="bold"
+                tools:text="A" />
+        </FrameLayout>
+
+        <!-- Information Column -->
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/spacing_md"
+            android:layout_weight="1"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/tv_student_name"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:ellipsize="end"
+                android:maxLines="1"
+                android:textColor="@color/text_primary"
+                android:textSize="@dimen/text_body_lg"
+                android:textStyle="bold"
+                tools:text="Nguyễn Văn An" />
+
+            <TextView
+                android:id="@+id/tv_student_mssv"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="2dp"
+                android:textColor="@color/text_secondary"
+                android:textSize="@dimen/text_body_sm"
+                tools:text="MSSV: 20210001" />
+
+        </LinearLayout>
+
+        <!-- Barcode Status Badge -->
+        <TextView
+            android:id="@+id/tv_barcode_badge"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/bg_badge_present"
+            android:drawableStart="@drawable/ic_barcode"
+            android:drawablePadding="4dp"
+            android:textColor="@color/on_status_present_container"
+            android:textSize="11sp"
+            android:textStyle="bold"
+            tools:text="SV20210001" />
+
+    </LinearLayout>
+</com.google.android.material.card.MaterialCardView>

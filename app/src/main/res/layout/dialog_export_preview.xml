@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@drawable/bg_search_bar"
+    android:backgroundTint="@color/surface"
+    android:orientation="vertical"
+    android:padding="@dimen/spacing_xl">
+
+    <!-- Drag Handle -->
+    <View
+        android:layout_width="36dp"
+        android:layout_height="4dp"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginBottom="@dimen/spacing_md"
+        android:background="@drawable/bg_badge_unchecked" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/export_title"
+        android:textColor="@color/text_primary"
+        android:textSize="@dimen/text_title"
+        android:textStyle="bold" />
+
+    <TextView
+        android:id="@+id/tv_export_session_info"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="2dp"
+        android:textColor="@color/text_secondary"
+        android:textSize="@dimen/text_body_sm"
+        tools:text="Buổi 05: Điểm danh tuần 5 • Lập trình Di động 1" />
+
+    <!-- Format Radio Selector -->
+    <RadioGroup
+        android:id="@+id/rg_export_format"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/spacing_md"
+        android:orientation="horizontal">
+
+        <RadioButton
+            android:id="@+id/rb_export_csv"
+            android:layout_width="0dp"
+            android:layout_height="44dp"
+            android:layout_weight="1"
+            android:checked="true"
+            android:text="@string/export_type_csv" />
+
+        <RadioButton
+            android:id="@+id/rb_export_txt"
+            android:layout_width="0dp"
+            android:layout_height="44dp"
+            android:layout_weight="1"
+            android:text="@string/export_type_txt" />
+    </RadioGroup>
+
+    <!-- Monospace Content Preview Area -->
+    <com.google.android.material.card.MaterialCardView
+        android:layout_width="match_parent"
+        android:layout_height="180dp"
+        android:layout_marginTop="@dimen/spacing_sm"
+        app:cardBackgroundColor="@color/surface_variant"
+        app:cardCornerRadius="@dimen/corner_md"
+        app:cardElevation="0dp"
+        app:strokeColor="@color/divider"
+        app:strokeWidth="1dp">
+
+        <androidx.core.widget.NestedScrollView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:padding="@dimen/spacing_md">
+
+            <TextView
+                android:id="@+id/tv_export_preview_content"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:fontFamily="monospace"
+                android:textColor="@color/text_primary"
+                android:textSize="12sp"
+                tools:text="STT,MSSV,Họ và tên,Trạng thái,Thời gian\n1,20210001,Nguyễn Văn An,Có mặt,08:02:15\n2,20210002,Trần Thị Bình,Có mặt,08:05:40" />
+        </androidx.core.widget.NestedScrollView>
+    </com.google.android.material.card.MaterialCardView>
+
+    <!-- Actions -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/spacing_lg"
+        android:orientation="horizontal">
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btn_export_copy"
+            style="@style/Widget.Material3.Button.OutlinedButton"
+            android:layout_width="0dp"
+            android:layout_height="@dimen/min_touch_target"
+            android:layout_marginEnd="@dimen/spacing_xs"
+            android:layout_weight="1"
+            android:text="@string/action_copy"
+            android:textColor="@color/primary"
+            app:cornerRadius="@dimen/corner_md" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btn_export_share"
+            android:layout_width="0dp"
+            android:layout_height="@dimen/min_touch_target"
+            android:layout_marginStart="@dimen/spacing_xs"
+            android:layout_weight="1"
+            android:text="@string/export_btn_share"
+            android:textColor="@color/white"
+            android:textStyle="bold"
+            app:cornerRadius="@dimen/corner_md" />
+    </LinearLayout>
+
+</LinearLayout>

@@ -1,0 +1,1 @@
+﻿PASS: light theme, sound OFF, vibration OFF persisted after force-stop and cold launch.

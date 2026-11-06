@@ -1,0 +1,636 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main_coordinator"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/background">
+
+    <!-- Top AppBar -->
+    <com.google.android.material.appbar.AppBarLayout
+        android:id="@+id/app_bar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/surface"
+        app:elevation="0dp">
+
+        <com.google.android.material.appbar.MaterialToolbar
+            android:id="@+id/toolbar_main"
+            android:layout_width="match_parent"
+            android:layout_height="?attr/actionBarSize"
+            app:menu="@menu/menu_main"
+            app:title="@string/app_name"
+            app:titleTextAppearance="@style/TextAppearance.Material3.TitleMedium"
+            app:titleTextColor="@color/text_primary" />
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="@color/divider" />
+    </com.google.android.material.appbar.AppBarLayout>
+
+    <!-- Content Views Container -->
+    <FrameLayout
+        android:id="@+id/fragment_container"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginBottom="80dp"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior">
+
+        <!-- 1. TAB: TRANG CHỦ (Home View) -->
+        <androidx.core.widget.NestedScrollView
+            android:id="@+id/view_home"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:fillViewport="true">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:paddingBottom="@dimen/spacing_xxl">
+
+                <!-- Header Banner -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:paddingStart="@dimen/spacing_lg"
+                    android:paddingTop="@dimen/spacing_lg"
+                    android:paddingEnd="@dimen/spacing_lg"
+                    android:paddingBottom="@dimen/spacing_sm">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/home_title"
+                        android:textColor="@color/text_primary"
+                        android:textSize="@dimen/text_headline"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="2dp"
+                        android:text="@string/app_subtitle"
+                        android:textColor="@color/text_secondary"
+                        android:textSize="@dimen/text_body_sm" />
+                </LinearLayout>
+
+                <!-- SECTION: ACTIVE SESSION (Đang mở) -->
+                <com.google.android.material.card.MaterialCardView
+                    android:id="@+id/card_active_session"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/spacing_lg"
+                    android:layout_marginTop="@dimen/spacing_sm"
+                    android:layout_marginEnd="@dimen/spacing_lg"
+                    android:layout_marginBottom="@dimen/spacing_md"
+                    app:cardBackgroundColor="@color/surface"
+                    app:cardCornerRadius="@dimen/corner_lg"
+                    app:cardElevation="2dp"
+                    app:strokeColor="@color/primary_light"
+                    app:strokeWidth="1.5dp">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:padding="@dimen/spacing_lg">
+
+                        <!-- Active Header -->
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:gravity="center_vertical"
+                            android:orientation="horizontal">
+
+                            <TextView
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                android:text="@string/home_active_session_title"
+                                android:textColor="@color/primary"
+                                android:textSize="@dimen/text_body_sm"
+                                android:textStyle="bold" />
+
+                            <TextView
+                                android:id="@+id/tv_home_session_badge"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:background="@drawable/bg_badge_present"
+                                android:text="@string/session_status_active"
+                                android:textColor="@color/on_status_present_container"
+                                android:textSize="@dimen/text_caption"
+                                android:textStyle="bold" />
+                        </LinearLayout>
+
+                        <!-- Title & Class -->
+                        <TextView
+                            android:id="@+id/tv_home_active_title"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="@dimen/spacing_sm"
+                            android:textColor="@color/text_primary"
+                            android:textSize="@dimen/text_title"
+                            android:textStyle="bold"
+                            tools:text="Buổi 05: Điểm danh tuần 5" />
+
+                        <TextView
+                            android:id="@+id/tv_home_active_class"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="2dp"
+                            android:textColor="@color/text_secondary"
+                            android:textSize="@dimen/text_body"
+                            tools:text="Lập trình Di động 1 • IT4010 - Nhóm 01" />
+
+                        <TextView
+                            android:id="@+id/tv_home_active_time"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="@dimen/spacing_xs"
+                            android:textColor="@color/text_secondary"
+                            android:textSize="@dimen/text_body_sm"
+                            tools:text="08:00 - 11:30 • Hôm nay" />
+
+                        <!-- Progress Bar & Ratio -->
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="@dimen/spacing_md"
+                            android:gravity="center_vertical"
+                            android:orientation="horizontal">
+
+                            <TextView
+                                android:id="@+id/tv_home_progress_label"
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                android:textColor="@color/text_primary"
+                                android:textSize="@dimen/text_body_sm"
+                                android:textStyle="bold"
+                                tools:text="5/8 đã điểm danh (62%)" />
+
+                            <TextView
+                                android:id="@+id/tv_home_breakdown_label"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:textColor="@color/text_secondary"
+                                android:textSize="@dimen/text_caption"
+                                tools:text="4 Đúng giờ • 1 Muộn • 3 Chưa điểm" />
+                        </LinearLayout>
+
+                        <com.google.android.material.progressindicator.LinearProgressIndicator
+                            android:id="@+id/progress_home_active"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="@dimen/spacing_xs"
+                            android:progress="62"
+                            app:indicatorColor="@color/status_present"
+                            app:trackColor="@color/divider"
+                            app:trackCornerRadius="4dp"
+                            app:trackThickness="8dp" />
+
+                        <!-- Action Buttons in Card -->
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="@dimen/spacing_lg"
+                            android:gravity="center_vertical"
+                            android:orientation="horizontal">
+
+                            <com.google.android.material.button.MaterialButton
+                                android:id="@+id/btn_home_continue_scan"
+                                android:layout_width="0dp"
+                                android:layout_height="@dimen/min_touch_target"
+                                android:layout_weight="1"
+                                android:backgroundTint="@color/primary"
+                                android:text="@string/home_btn_continue_scan"
+                                android:textColor="@color/white"
+                                android:textStyle="bold"
+                                app:cornerRadius="@dimen/corner_md"
+                                app:icon="@drawable/ic_qr_scan"
+                                app:iconTint="@color/white" />
+
+                            <com.google.android.material.button.MaterialButton
+                                android:id="@+id/btn_home_view_session"
+                                style="@style/Widget.Material3.Button.OutlinedButton"
+                                android:layout_width="wrap_content"
+                                android:layout_height="@dimen/min_touch_target"
+                                android:layout_marginStart="@dimen/spacing_sm"
+                                android:text="Chi tiết"
+                                android:textColor="@color/primary"
+                                app:cornerRadius="@dimen/corner_md"
+                                app:strokeColor="@color/primary" />
+                        </LinearLayout>
+                    </LinearLayout>
+                </com.google.android.material.card.MaterialCardView>
+
+                <!-- SECTION: NO ACTIVE SESSION (EMPTY STATE) -->
+                <com.google.android.material.card.MaterialCardView
+                    android:id="@+id/card_no_active_session"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/spacing_lg"
+                    android:layout_marginTop="@dimen/spacing_sm"
+                    android:layout_marginEnd="@dimen/spacing_lg"
+                    android:layout_marginBottom="@dimen/spacing_md"
+                    android:visibility="gone"
+                    app:cardCornerRadius="@dimen/corner_lg"
+                    app:cardElevation="1dp"
+                    app:strokeColor="@color/divider"
+                    app:strokeWidth="1dp"
+                    tools:visibility="visible">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:gravity="center"
+                        android:orientation="vertical"
+                        android:padding="@dimen/spacing_xl">
+
+                        <ImageView
+                            android:layout_width="56dp"
+                            android:layout_height="56dp"
+                            android:src="@drawable/ic_schedule"
+                            app:tint="@color/text_tertiary" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="@dimen/spacing_md"
+                            android:text="@string/home_no_active_session_title"
+                            android:textColor="@color/text_primary"
+                            android:textSize="@dimen/text_title"
+                            android:textStyle="bold" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="@dimen/spacing_xs"
+                            android:gravity="center"
+                            android:text="@string/home_no_active_session_desc"
+                            android:textColor="@color/text_secondary"
+                            android:textSize="@dimen/text_body" />
+
+                        <com.google.android.material.button.MaterialButton
+                            android:id="@+id/btn_home_empty_create_session"
+                            android:layout_width="wrap_content"
+                            android:layout_height="@dimen/min_touch_target"
+                            android:layout_marginTop="@dimen/spacing_lg"
+                            android:text="@string/home_btn_create_session"
+                            android:textColor="@color/white"
+                            app:cornerRadius="@dimen/corner_md"
+                            app:icon="@drawable/ic_add"
+                            app:iconTint="@color/white" />
+                    </LinearLayout>
+                </com.google.android.material.card.MaterialCardView>
+
+                <!-- Action Button: Tạo buổi điểm danh -->
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btn_home_create_session"
+                    style="@style/Widget.Material3.Button.TonalButton"
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/min_touch_target"
+                    android:layout_marginStart="@dimen/spacing_lg"
+                    android:layout_marginTop="@dimen/spacing_xs"
+                    android:layout_marginEnd="@dimen/spacing_lg"
+                    android:layout_marginBottom="@dimen/spacing_lg"
+                    android:text="@string/home_btn_create_session"
+                    android:textColor="@color/primary"
+                    android:textStyle="bold"
+                    app:cornerRadius="@dimen/corner_md"
+                    app:icon="@drawable/ic_add"
+                    app:iconTint="@color/primary" />
+
+                <!-- RECENT SESSIONS SECTION -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal"
+                    android:paddingStart="@dimen/spacing_lg"
+                    android:paddingTop="@dimen/spacing_sm"
+                    android:paddingEnd="@dimen/spacing_lg"
+                    android:paddingBottom="@dimen/spacing_sm">
+
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="@string/home_recent_sessions"
+                        android:textColor="@color/text_primary"
+                        android:textSize="@dimen/text_title"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        android:id="@+id/tv_home_view_history"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:clickable="true"
+                        android:focusable="true"
+                        android:foreground="?attr/selectableItemBackground"
+                        android:padding="@dimen/spacing_xs"
+                        android:text="@string/home_view_all_history"
+                        android:textColor="@color/primary"
+                        android:textSize="@dimen/text_body_sm"
+                        android:textStyle="bold" />
+                </LinearLayout>
+
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/rv_home_recent_sessions"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:nestedScrollingEnabled="false"
+                    tools:itemCount="2"
+                    tools:listitem="@layout/item_session" />
+
+            </LinearLayout>
+        </androidx.core.widget.NestedScrollView>
+
+        <!-- 2. TAB: DANH SÁCH LỚP (Classes View) -->
+        <LinearLayout
+            android:id="@+id/view_classes"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            android:visibility="gone">
+
+            <!-- Search Bar & Add Button -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center_vertical"
+                android:orientation="horizontal"
+                android:paddingStart="@dimen/spacing_lg"
+                android:paddingTop="@dimen/spacing_md"
+                android:paddingEnd="@dimen/spacing_lg"
+                android:paddingBottom="@dimen/spacing_sm">
+
+                <EditText
+                    android:id="@+id/et_classes_search"
+                    android:layout_width="0dp"
+                    android:layout_height="44dp"
+                    android:layout_weight="1"
+                    android:background="@drawable/bg_search_bar"
+                    android:drawableStart="@drawable/ic_search"
+                    android:drawablePadding="@dimen/spacing_sm"
+                    android:hint="@string/classes_search_hint"
+                    android:imeOptions="actionSearch"
+                    android:inputType="text"
+                    android:paddingStart="@dimen/spacing_md"
+                    android:paddingEnd="@dimen/spacing_md"
+                    android:textColor="@color/text_primary"
+                    android:textColorHint="@color/text_tertiary"
+                    android:textSize="@dimen/text_body" />
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btn_classes_add"
+                    android:layout_width="44dp"
+                    android:layout_height="44dp"
+                    android:layout_marginStart="@dimen/spacing_sm"
+                    android:insetTop="0dp"
+                    android:insetBottom="0dp"
+                    android:padding="0dp"
+                    app:cornerRadius="@dimen/corner_md"
+                    app:icon="@drawable/ic_add"
+                    app:iconGravity="textStart"
+                    app:iconPadding="0dp"
+                    app:iconTint="@color/white" />
+            </LinearLayout>
+
+            <!-- Empty Search State -->
+            <TextView
+                android:id="@+id/tv_classes_no_search"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/spacing_xxl"
+                android:gravity="center"
+                android:text="@string/classes_no_search_result"
+                android:textColor="@color/text_secondary"
+                android:textSize="@dimen/text_body_lg"
+                android:visibility="gone" />
+
+            <!-- Empty Classes State -->
+            <LinearLayout
+                android:id="@+id/ll_classes_empty"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:gravity="center"
+                android:orientation="vertical"
+                android:padding="@dimen/spacing_xxl"
+                android:visibility="gone">
+
+                <ImageView
+                    android:layout_width="64dp"
+                    android:layout_height="64dp"
+                    android:src="@drawable/ic_class"
+                    app:tint="@color/text_tertiary" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/spacing_md"
+                    android:text="@string/classes_empty_title"
+                    android:textColor="@color/text_primary"
+                    android:textSize="@dimen/text_title"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/spacing_xs"
+                    android:gravity="center"
+                    android:text="@string/classes_empty_desc"
+                    android:textColor="@color/text_secondary"
+                    android:textSize="@dimen/text_body" />
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btn_classes_empty_add"
+                    android:layout_width="wrap_content"
+                    android:layout_height="@dimen/min_touch_target"
+                    android:layout_marginTop="@dimen/spacing_lg"
+                    android:text="@string/classes_btn_add"
+                    android:textColor="@color/white"
+                    app:cornerRadius="@dimen/corner_md"
+                    app:icon="@drawable/ic_add"
+                    app:iconTint="@color/white" />
+            </LinearLayout>
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/rv_classes_list"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:clipToPadding="false"
+                android:paddingTop="@dimen/spacing_xs"
+                android:paddingBottom="@dimen/spacing_xxl"
+                tools:itemCount="3"
+                tools:listitem="@layout/item_class" />
+        </LinearLayout>
+
+        <!-- 3. TAB: LỊCH SỬ (History View) -->
+        <LinearLayout
+            android:id="@+id/view_history"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            android:visibility="gone">
+
+            <!-- Filter Row: Class & Time range chips -->
+            <HorizontalScrollView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:scrollbars="none">
+
+                <com.google.android.material.chip.ChipGroup
+                    android:id="@+id/chip_group_history_class"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:paddingStart="@dimen/spacing_lg"
+                    android:paddingTop="@dimen/spacing_sm"
+                    android:paddingEnd="@dimen/spacing_lg"
+                    android:paddingBottom="@dimen/spacing_xs"
+                    app:singleSelection="true">
+
+                    <com.google.android.material.chip.Chip
+                        android:id="@+id/chip_history_all"
+                        style="@style/Widget.Material3.Chip.Filter"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:checked="true"
+                        android:text="Tất cả lớp" />
+
+                    <com.google.android.material.chip.Chip
+                        android:id="@+id/chip_history_class1"
+                        style="@style/Widget.Material3.Chip.Filter"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Lập trình Di động 1" />
+
+                    <com.google.android.material.chip.Chip
+                        android:id="@+id/chip_history_class2"
+                        style="@style/Widget.Material3.Chip.Filter"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Cơ sở dữ liệu nâng cao" />
+                </com.google.android.material.chip.ChipGroup>
+            </HorizontalScrollView>
+
+            <!-- Stats Header Bar -->
+            <com.google.android.material.card.MaterialCardView
+                android:id="@+id/card_history_stats_banner"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/spacing_lg"
+                android:layout_marginTop="@dimen/spacing_xs"
+                android:layout_marginEnd="@dimen/spacing_lg"
+                android:layout_marginBottom="@dimen/spacing_sm"
+                android:clickable="true"
+                android:focusable="true"
+                android:foreground="?attr/selectableItemBackground"
+                app:cardBackgroundColor="@color/surface"
+                app:cardCornerRadius="@dimen/corner_md"
+                app:cardElevation="1dp"
+                app:strokeColor="@color/divider"
+                app:strokeWidth="1dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal"
+                    android:padding="@dimen/spacing_md">
+
+                    <ImageView
+                        android:layout_width="36dp"
+                        android:layout_height="36dp"
+                        android:src="@drawable/ic_stats"
+                        app:tint="@color/primary" />
+
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="@dimen/spacing_md"
+                        android:layout_weight="1"
+                        android:orientation="vertical">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@string/history_btn_stats"
+                            android:textColor="@color/text_primary"
+                            android:textSize="@dimen/text_body_lg"
+                            android:textStyle="bold" />
+
+                        <TextView
+                            android:id="@+id/tv_history_stats_summary"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Xem biểu đồ và tỷ lệ chuyên cần các lớp"
+                            android:textColor="@color/text_secondary"
+                            android:textSize="@dimen/text_body_sm" />
+                    </LinearLayout>
+
+                    <ImageView
+                        android:layout_width="20dp"
+                        android:layout_height="20dp"
+                        android:src="@drawable/ic_arrow_back"
+                        android:rotation="180"
+                        app:tint="@color/text_tertiary" />
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
+
+            <!-- Reset Filter Row (visible when filtered empty) -->
+            <LinearLayout
+                android:id="@+id/ll_history_empty_filter"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/spacing_xl"
+                android:gravity="center"
+                android:orientation="vertical"
+                android:visibility="gone">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Không có buổi điểm danh nào khớp bộ lọc"
+                    android:textColor="@color/text_secondary"
+                    android:textSize="@dimen/text_body" />
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btn_history_reset_filter"
+                    style="@style/Widget.Material3.Button.TextButton"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/spacing_xs"
+                    android:text="@string/history_reset_filter" />
+            </LinearLayout>
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/rv_history_list"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:clipToPadding="false"
+                android:paddingTop="@dimen/spacing_xs"
+                android:paddingBottom="@dimen/spacing_xxl"
+                tools:itemCount="3"
+                tools:listitem="@layout/item_session" />
+        </LinearLayout>
+
+    </FrameLayout>
+
+    <!-- Bottom Navigation Bar -->
+    <com.google.android.material.bottomnavigation.BottomNavigationView
+        android:id="@+id/bottom_navigation"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom"
+        android:background="@color/surface"
+        app:elevation="8dp"
+        app:itemIconTint="@color/primary"
+        app:itemTextColor="@color/primary"
+        app:menu="@menu/bottom_nav_menu" />
+
+</androidx.coordinatorlayout.widget.CoordinatorLayout>

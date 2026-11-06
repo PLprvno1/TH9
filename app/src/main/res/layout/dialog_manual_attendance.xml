@@ -1,0 +1,175 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@drawable/bg_search_bar"
+    android:backgroundTint="@color/surface"
+    android:orientation="vertical"
+    android:padding="@dimen/spacing_xl">
+
+    <!-- Drag Handle -->
+    <View
+        android:layout_width="36dp"
+        android:layout_height="4dp"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginBottom="@dimen/spacing_md"
+        android:background="@drawable/bg_badge_unchecked" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/session_btn_manual"
+        android:textColor="@color/text_primary"
+        android:textSize="@dimen/text_title"
+        android:textStyle="bold" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="2dp"
+        android:text="Tìm kiếm sinh viên theo tên hoặc MSSV để ghi nhận điểm danh"
+        android:textColor="@color/text_secondary"
+        android:textSize="@dimen/text_caption" />
+
+    <!-- Search Input -->
+    <EditText
+        android:id="@+id/et_manual_search"
+        android:layout_width="match_parent"
+        android:layout_height="44dp"
+        android:layout_marginTop="@dimen/spacing_md"
+        android:background="@drawable/bg_search_bar"
+        android:drawableStart="@drawable/ic_search"
+        android:drawablePadding="@dimen/spacing_sm"
+        android:hint="Nhập MSSV hoặc họ tên sinh viên..."
+        android:inputType="text"
+        android:paddingStart="@dimen/spacing_md"
+        android:paddingEnd="@dimen/spacing_md"
+        android:textColor="@color/text_primary"
+        android:textColorHint="@color/text_tertiary"
+        android:textSize="@dimen/text_body" />
+
+    <!-- Selected Student Info Card -->
+    <com.google.android.material.card.MaterialCardView
+        android:id="@+id/card_selected_student"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/spacing_sm"
+        android:visibility="gone"
+        app:cardBackgroundColor="@color/primary_container"
+        app:cardCornerRadius="@dimen/corner_md"
+        app:cardElevation="0dp"
+        tools:visibility="visible">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_vertical"
+            android:orientation="horizontal"
+            android:padding="@dimen/spacing_md">
+
+            <ImageView
+                android:layout_width="28dp"
+                android:layout_height="28dp"
+                android:src="@drawable/ic_person"
+                app:tint="@color/primary" />
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/spacing_md"
+                android:layout_weight="1"
+                android:orientation="vertical">
+
+                <TextView
+                    android:id="@+id/tv_manual_student_name"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textColor="@color/on_primary_container"
+                    android:textSize="@dimen/text_body_lg"
+                    android:textStyle="bold"
+                    tools:text="Đặng Thu Hà" />
+
+                <TextView
+                    android:id="@+id/tv_manual_student_mssv"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textColor="@color/primary"
+                    android:textSize="@dimen/text_body_sm"
+                    tools:text="MSSV: 20210006" />
+            </LinearLayout>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Đã chọn ✓"
+                android:textColor="@color/primary"
+                android:textSize="11sp"
+                android:textStyle="bold" />
+        </LinearLayout>
+    </com.google.android.material.card.MaterialCardView>
+
+    <!-- Students Matching List (Max 3 items visible) -->
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/rv_manual_candidates"
+        android:layout_width="match_parent"
+        android:layout_height="130dp"
+        android:layout_marginTop="@dimen/spacing_xs"
+        tools:itemCount="2"
+        tools:listitem="@layout/item_student" />
+
+    <!-- Status Selection -->
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/spacing_md"
+        android:text="Có mặt / Đi muộn được tính tự động theo giờ ghi nhận."
+        android:textColor="@color/text_primary"
+        android:textSize="@dimen/text_body_sm"
+        android:textStyle="bold" />
+
+    <RadioGroup
+        android:id="@+id/rg_manual_status"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/spacing_xs"
+        android:orientation="horizontal">
+
+        <RadioButton
+            android:id="@+id/rb_manual_present"
+            android:layout_width="0dp"
+            android:layout_height="44dp"
+            android:layout_weight="1"
+            android:checked="true"
+            android:text="Có mặt" />
+
+        <RadioButton
+            android:id="@+id/rb_manual_late"
+            android:layout_width="0dp"
+            android:layout_height="44dp"
+            android:layout_weight="1"
+            android:text="Đi muộn" />
+
+        <RadioButton
+            android:id="@+id/rb_manual_absent"
+            android:layout_width="0dp"
+            android:layout_height="44dp"
+            android:layout_weight="1"
+            android:text="Vắng" />
+    </RadioGroup>
+
+    <!-- Actions -->
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/btn_manual_confirm"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/min_touch_target"
+        android:layout_marginTop="@dimen/spacing_lg"
+        android:enabled="false"
+        android:text="Xác nhận điểm danh"
+        android:textColor="@color/white"
+        android:textStyle="bold"
+        app:cornerRadius="@dimen/corner_md"
+        tools:enabled="true" />
+
+</LinearLayout>

@@ -1,0 +1,29 @@
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <!-- Base dark application theme. -->
+    <style name="Base.Theme.TH9" parent="Theme.Material3.DayNight.NoActionBar">
+        <!-- Brand colors -->
+        <item name="colorPrimary">#60A5FA</item>
+        <item name="colorOnPrimary">#0F172A</item>
+        <item name="colorPrimaryContainer">#1E3A8A</item>
+        <item name="colorOnPrimaryContainer">#DBEAFE</item>
+
+        <item name="colorSecondary">#94A3B8</item>
+        <item name="colorOnSecondary">#0F172A</item>
+        <item name="colorSecondaryContainer">#1E293B</item>
+
+        <item name="android:colorBackground">#0F172A</item>
+        <item name="colorSurface">#1E293B</item>
+        <item name="colorOnSurface">#F8FAFC</item>
+        <item name="colorSurfaceVariant">#334155</item>
+        <item name="colorOnSurfaceVariant">#CBD5E1</item>
+
+        <!-- Status bar / Navigation bar -->
+        <item name="android:statusBarColor">#0F172A</item>
+        <item name="android:windowLightStatusBar">false</item>
+        <item name="android:navigationBarColor">#1E293B</item>
+
+        <item name="materialCardViewStyle">@style/Widget.App.CardView</item>
+    </style>
+
+    <style name="Theme.TH9" parent="Base.Theme.TH9" />
+</resources>

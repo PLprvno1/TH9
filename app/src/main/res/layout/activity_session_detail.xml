@@ -1,0 +1,414 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/background">
+
+    <com.google.android.material.appbar.AppBarLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/surface"
+        app:elevation="0dp">
+
+        <com.google.android.material.appbar.MaterialToolbar
+            android:id="@+id/toolbar_session_detail"
+            android:layout_width="match_parent"
+            android:layout_height="?attr/actionBarSize"
+            app:navigationIcon="@drawable/ic_arrow_back"
+            app:title="@string/session_detail_title"
+            app:titleTextAppearance="@style/TextAppearance.Material3.TitleMedium"
+            app:titleTextColor="@color/text_primary" />
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="@color/divider" />
+    </com.google.android.material.appbar.AppBarLayout>
+
+    <androidx.core.widget.NestedScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:fillViewport="true"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="@dimen/spacing_lg">
+
+            <!-- Overview Card -->
+            <com.google.android.material.card.MaterialCardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:cardCornerRadius="@dimen/corner_lg"
+                app:cardElevation="1dp"
+                app:strokeColor="@color/divider"
+                app:strokeWidth="1dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="@dimen/spacing_lg">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:gravity="center_vertical"
+                        android:orientation="horizontal">
+
+                        <TextView
+                            android:id="@+id/tv_detail_session_title"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:textColor="@color/text_primary"
+                            android:textSize="@dimen/text_headline"
+                            android:textStyle="bold"
+                            tools:text="Buổi 05: Điểm danh tuần 5" />
+
+                        <TextView
+                            android:id="@+id/tv_detail_session_badge"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:background="@drawable/bg_badge_present"
+                            android:textColor="@color/on_status_present_container"
+                            android:textSize="@dimen/text_caption"
+                            android:textStyle="bold"
+                            tools:text="Đang mở" />
+                    </LinearLayout>
+
+                    <TextView
+                        android:id="@+id/tv_detail_session_class"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="@dimen/spacing_xs"
+                        android:textColor="@color/primary"
+                        android:textSize="@dimen/text_body_lg"
+                        android:textStyle="bold"
+                        tools:text="Lập trình Di động 1 • IT4010 - Nhóm 01" />
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="@dimen/spacing_sm"
+                        android:orientation="horizontal">
+
+                        <TextView
+                            android:id="@+id/tv_detail_session_schedule"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:textColor="@color/text_secondary"
+                            android:textSize="@dimen/text_body_sm"
+                            tools:text="08:00 • 06/11/2026" />
+
+                        <TextView
+                            android:id="@+id/tv_detail_session_total_expected"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:textColor="@color/text_primary"
+                            android:textSize="@dimen/text_body_sm"
+                            android:textStyle="bold"
+                            tools:text="Sĩ số: 8 SV" />
+                    </LinearLayout>
+
+                    <TextView
+                        android:id="@+id/tv_detail_late_rule"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="@dimen/spacing_xs"
+                        android:textColor="@color/status_late"
+                        android:textSize="@dimen/text_caption"
+                        tools:text="Quy tắc: Quét sau 08:15 tính đi muộn" />
+
+                    <TextView
+                        android:id="@+id/tv_detail_finished_time"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="@dimen/spacing_xs"
+                        android:textColor="@color/text_secondary"
+                        android:textSize="@dimen/text_caption"
+                        android:visibility="gone"
+                        tools:text="Kết thúc lúc: 11:30, 06/11/2026"
+                        tools:visibility="visible" />
+
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
+
+            <!-- Dynamic State Section -->
+            <FrameLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/spacing_lg">
+
+                <!-- 1. STATE: CHƯA MỞ (UPCOMING) -->
+                <LinearLayout
+                    android:id="@+id/layout_state_upcoming"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:visibility="gone"
+                    tools:visibility="gone">
+
+                    <com.google.android.material.card.MaterialCardView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        app:cardBackgroundColor="@color/surface_variant"
+                        app:cardCornerRadius="@dimen/corner_md"
+                        app:cardElevation="0dp">
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:gravity="center"
+                            android:orientation="vertical"
+                            android:padding="@dimen/spacing_xl">
+
+                            <ImageView
+                                android:layout_width="48dp"
+                                android:layout_height="48dp"
+                                android:src="@drawable/ic_schedule"
+                                app:tint="@color/text_tertiary" />
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="@dimen/spacing_sm"
+                                android:text="Buổi điểm danh chưa bắt đầu"
+                                android:textColor="@color/text_primary"
+                                android:textSize="@dimen/text_title"
+                                android:textStyle="bold" />
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="@dimen/spacing_xs"
+                                android:gravity="center"
+                                android:text="Nhấn Mở buổi để kích hoạt camera quét mã thẻ và ghi nhận điểm danh."
+                                android:textColor="@color/text_secondary"
+                                android:textSize="@dimen/text_body_sm" />
+
+                            <com.google.android.material.button.MaterialButton
+                                android:id="@+id/btn_action_open_session"
+                                android:layout_width="match_parent"
+                                android:layout_height="@dimen/min_touch_target"
+                                android:layout_marginTop="@dimen/spacing_lg"
+                                android:text="@string/session_btn_open"
+                                android:textColor="@color/white"
+                                android:textStyle="bold"
+                                app:cornerRadius="@dimen/corner_md" />
+                        </LinearLayout>
+                    </com.google.android.material.card.MaterialCardView>
+                </LinearLayout>
+
+                <!-- 2. STATE: ĐANG MỞ (ACTIVE) -->
+                <LinearLayout
+                    android:id="@+id/layout_state_active"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:visibility="visible"
+                    tools:visibility="visible">
+
+                    <!-- Live Progress Card -->
+                    <com.google.android.material.card.MaterialCardView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        app:cardCornerRadius="@dimen/corner_md"
+                        app:cardElevation="1dp"
+                        app:strokeColor="@color/divider"
+                        app:strokeWidth="1dp">
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="vertical"
+                            android:padding="@dimen/spacing_lg">
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="Tiến độ điểm danh trực tiếp"
+                                android:textColor="@color/text_secondary"
+                                android:textSize="@dimen/text_body_sm"
+                                android:textStyle="bold" />
+
+                            <TextView
+                                android:id="@+id/tv_active_ratio"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="@dimen/spacing_xs"
+                                android:textColor="@color/text_primary"
+                                android:textSize="@dimen/text_display"
+                                android:textStyle="bold"
+                                tools:text="5/8 đã điểm danh" />
+
+                            <com.google.android.material.progressindicator.LinearProgressIndicator
+                                android:id="@+id/progress_active_session"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="@dimen/spacing_sm"
+                                android:progress="62"
+                                app:indicatorColor="@color/status_present"
+                                app:trackColor="@color/divider"
+                                app:trackCornerRadius="4dp"
+                                app:trackThickness="10dp" />
+
+                            <!-- Breakdown Pills -->
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="@dimen/spacing_md"
+                                android:orientation="horizontal">
+
+                                <TextView
+                                    android:id="@+id/tv_active_present"
+                                    android:layout_width="0dp"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginEnd="@dimen/spacing_xs"
+                                    android:layout_weight="1"
+                                    android:background="@drawable/bg_badge_present"
+                                    android:gravity="center"
+                                    android:padding="@dimen/spacing_xs"
+                                    android:textColor="@color/on_status_present_container"
+                                    android:textSize="@dimen/text_caption"
+                                    android:textStyle="bold"
+                                    tools:text="4 Có mặt" />
+
+                                <TextView
+                                    android:id="@+id/tv_active_late"
+                                    android:layout_width="0dp"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginStart="@dimen/spacing_xs"
+                                    android:layout_marginEnd="@dimen/spacing_xs"
+                                    android:layout_weight="1"
+                                    android:background="@drawable/bg_badge_late"
+                                    android:gravity="center"
+                                    android:padding="@dimen/spacing_xs"
+                                    android:textColor="@color/on_status_late_container"
+                                    android:textSize="@dimen/text_caption"
+                                    android:textStyle="bold"
+                                    tools:text="1 Đi muộn" />
+
+                                <TextView
+                                    android:id="@+id/tv_active_unchecked"
+                                    android:layout_width="0dp"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginStart="@dimen/spacing_xs"
+                                    android:layout_weight="1"
+                                    android:background="@drawable/bg_badge_unchecked"
+                                    android:gravity="center"
+                                    android:padding="@dimen/spacing_xs"
+                                    android:textColor="@color/text_secondary"
+                                    android:textSize="@dimen/text_caption"
+                                    android:textStyle="bold"
+                                    tools:text="3 Chưa điểm" />
+                            </LinearLayout>
+
+                        </LinearLayout>
+                    </com.google.android.material.card.MaterialCardView>
+
+                    <!-- Active Action Buttons -->
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/btn_action_scan"
+                        android:layout_width="match_parent"
+                        android:layout_height="@dimen/min_touch_target"
+                        android:layout_marginTop="@dimen/spacing_lg"
+                        android:text="@string/session_btn_scan"
+                        android:textColor="@color/white"
+                        android:textStyle="bold"
+                        app:cornerRadius="@dimen/corner_md"
+                        app:icon="@drawable/ic_qr_scan"
+                        app:iconTint="@color/white" />
+
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/btn_action_manual"
+                        style="@style/Widget.Material3.Button.TonalButton"
+                        android:layout_width="match_parent"
+                        android:layout_height="@dimen/min_touch_target"
+                        android:layout_marginTop="@dimen/spacing_sm"
+                        android:text="@string/session_btn_manual"
+                        android:textColor="@color/primary"
+                        app:cornerRadius="@dimen/corner_md"
+                        app:icon="@drawable/ic_search"
+                        app:iconTint="@color/primary" />
+
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/btn_action_finish_session"
+                        style="@style/Widget.Material3.Button.OutlinedButton"
+                        android:layout_width="match_parent"
+                        android:layout_height="@dimen/min_touch_target"
+                        android:layout_marginTop="@dimen/spacing_sm"
+                        android:text="@string/session_btn_finish"
+                        android:textColor="@color/status_absent"
+                        app:cornerRadius="@dimen/corner_md"
+                        app:strokeColor="@color/status_absent" />
+
+                </LinearLayout>
+
+                <!-- 3. STATE: ĐÃ KẾT THÚC (FINISHED) -->
+                <LinearLayout
+                    android:id="@+id/layout_state_finished"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:visibility="gone"
+                    tools:visibility="gone">
+
+                    <com.google.android.material.card.MaterialCardView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        app:cardBackgroundColor="@color/surface"
+                        app:cardCornerRadius="@dimen/corner_md"
+                        app:cardElevation="1dp"
+                        app:strokeColor="@color/divider"
+                        app:strokeWidth="1dp">
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="vertical"
+                            android:padding="@dimen/spacing_lg">
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="Tổng kết buổi điểm danh"
+                                android:textColor="@color/text_primary"
+                                android:textSize="@dimen/text_title"
+                                android:textStyle="bold" />
+
+                            <TextView
+                                android:id="@+id/tv_finished_summary_text"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="@dimen/spacing_xs"
+                                android:textColor="@color/text_secondary"
+                                android:textSize="@dimen/text_body"
+                                tools:text="Có mặt: 5 • Vắng mặt: 3 (Tỷ lệ: 62%)" />
+
+                            <com.google.android.material.button.MaterialButton
+                                android:id="@+id/btn_action_view_result"
+                                android:layout_width="match_parent"
+                                android:layout_height="@dimen/min_touch_target"
+                                android:layout_marginTop="@dimen/spacing_lg"
+                                android:text="@string/session_btn_view_result"
+                                android:textColor="@color/white"
+                                android:textStyle="bold"
+                                app:cornerRadius="@dimen/corner_md" />
+
+                        </LinearLayout>
+                    </com.google.android.material.card.MaterialCardView>
+
+                </LinearLayout>
+
+            </FrameLayout>
+
+        </LinearLayout>
+    </androidx.core.widget.NestedScrollView>
+
+</androidx.coordinatorlayout.widget.CoordinatorLayout>

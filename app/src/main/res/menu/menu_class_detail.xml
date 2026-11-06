@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <item
+        android:id="@+id/action_sort_menu"
+        android:icon="@drawable/ic_sort"
+        android:title="@string/action_sort"
+        app:showAsAction="ifRoom">
+        <menu>
+            <item
+                android:id="@+id/action_sort_name"
+                android:title="@string/class_detail_sort_name" />
+            <item
+                android:id="@+id/action_sort_mssv"
+                android:title="@string/class_detail_sort_mssv" />
+        </menu>
+    </item>
+    <item
+        android:id="@+id/action_import_csv"
+        android:icon="@drawable/ic_file_upload"
+        android:title="@string/class_detail_import_csv"
+        app:showAsAction="never" />
+</menu>
