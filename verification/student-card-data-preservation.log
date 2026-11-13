@@ -1,0 +1,8 @@
+PASS Classroom: 1 original rows preserved; current rows 1
+PASS Student: 1 original rows preserved; current rows 7
+PASS ClassMembership: 1 original rows preserved; current rows 1
+PASS AttendanceSession: 1 original rows preserved; current rows 1
+PASS AttendanceRecord: 1 original rows preserved; current rows 1
+PASS schema version 2; foreign_key_check empty
+OPEN sessions: 0
+PASS original sound/vibration/theme settings preserved

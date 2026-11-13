@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android" android:layout_width="match_parent" android:layout_height="match_parent" android:fillViewport="true" android:background="@color/background">
+    <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical" android:gravity="center_vertical" android:padding="28dp">
+        <ImageView android:layout_width="64dp" android:layout_height="64dp" android:src="@drawable/ic_class" android:importantForAccessibility="no" />
+        <TextView android:id="@+id/login_title" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="20dp" android:textSize="28sp" android:textStyle="bold" android:textColor="@color/primary" />
+        <TextView android:id="@+id/login_description" android:layout_width="match_parent" android:layout_height="wrap_content" android:paddingVertical="16dp" android:textColor="@color/text_secondary" />
+        <com.google.android.material.textfield.TextInputLayout android:id="@+id/login_name_layout" android:layout_width="match_parent" android:layout_height="wrap_content" android:hint="Họ tên quản trị viên">
+            <com.google.android.material.textfield.TextInputEditText android:id="@+id/login_name" android:layout_width="match_parent" android:layout_height="wrap_content" android:inputType="textPersonName" android:maxLength="120" />
+        </com.google.android.material.textfield.TextInputLayout>
+        <com.google.android.material.textfield.TextInputLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:hint="Tên đăng nhập">
+            <com.google.android.material.textfield.TextInputEditText android:id="@+id/login_username" android:layout_width="match_parent" android:layout_height="wrap_content" android:inputType="textVisiblePassword" android:maxLength="40" />
+        </com.google.android.material.textfield.TextInputLayout>
+        <com.google.android.material.textfield.TextInputLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:hint="Mật khẩu">
+            <com.google.android.material.textfield.TextInputEditText android:id="@+id/login_password" android:layout_width="match_parent" android:layout_height="wrap_content" android:inputType="textPassword" android:maxLength="128" android:saveEnabled="false" />
+        </com.google.android.material.textfield.TextInputLayout>
+        <com.google.android.material.textfield.TextInputLayout android:id="@+id/login_confirm_layout" android:layout_width="match_parent" android:layout_height="wrap_content" android:hint="Nhập lại mật khẩu">
+            <com.google.android.material.textfield.TextInputEditText android:id="@+id/login_confirm" android:layout_width="match_parent" android:layout_height="wrap_content" android:inputType="textPassword" android:maxLength="128" android:saveEnabled="false" />
+        </com.google.android.material.textfield.TextInputLayout>
+        <TextView android:id="@+id/login_error" android:layout_width="match_parent" android:layout_height="wrap_content" android:paddingVertical="12dp" android:accessibilityLiveRegion="polite" android:textColor="@color/status_absent" />
+        <com.google.android.material.button.MaterialButton android:id="@+id/login_submit" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="Đăng nhập" />
+    </LinearLayout>
+</ScrollView>

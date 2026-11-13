@@ -1,0 +1,3 @@
+PASS all database tables and rows unchanged; schema remains v4
+PASS integrity_check ok; foreign_key_check empty
+PASS all 10 original student photo/settings/login files unchanged

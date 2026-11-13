@@ -3,6 +3,19 @@ package com.example.th9.model;
 import java.io.Serializable;
 
 public class Student implements Serializable {
+    private String digitalCardCode, birthDate, course, primaryClassId, photoPath, gender;
+    public String getGender(){return gender;}
+    public void setGender(String value){gender=value;}
+    public String getDigitalCardCode(){return digitalCardCode;}
+    public void setDigitalCardCode(String value){digitalCardCode=value;}
+    public String getBirthDate(){return birthDate;}
+    public void setBirthDate(String value){birthDate=value;}
+    public String getCourse(){return course;}
+    public void setCourse(String value){course=value;}
+    public String getPrimaryClassId(){return primaryClassId;}
+    public void setPrimaryClassId(String value){primaryClassId=value;}
+    public String getPhotoPath(){return photoPath;}
+    public void setPhotoPath(String value){photoPath=value;}
     private String id;
     private String mssv;
     private String fullName;

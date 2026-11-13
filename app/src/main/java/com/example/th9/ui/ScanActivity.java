@@ -20,33 +20,32 @@ import com.example.th9.model.*;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 
 public class ScanActivity extends DataActivity {
-    public static final String EXTRA_MODE="extra_mode",EXTRA_SESSION_ID="extra_session_id",EXTRA_STUDENT_ID="extra_student_id",EXTRA_SCANNED_BARCODE="extra_scanned_barcode";
-    public static final int MODE_ATTENDANCE=1,MODE_LINK_CARD=2;
+    public static final String EXTRA_MODE="extra_mode",EXTRA_SESSION_ID="extra_session_id";
+    public static final int MODE_ATTENDANCE=1,MODE_VERIFY_CARD=3;
     private int mode;
-    private String sessionId,lastRaw,lastFormat;
+    private String sessionId;
     private CameraScanner scanner;
     private Camera camera;
-    private boolean modal,busy,torch,uiReady;
+    private VietnameseSpeaker speaker;
+    private boolean modal,busy,torch,uiReady,activityResumed;
     private String lastCode;
-    private long lastCodeAt,lastResultAt;
+    private long lastCodeAt;
     private TextView title,subtitle,status,info,time,error;
     private View errorOverlay,reticle;
     private ImageButton flash;
-    private View confirm;
     private final ActivityResultLauncher<String> permission=registerForActivityResult(new ActivityResultContracts.RequestPermission(),granted->{
-        if(granted)startCamera();else cameraError("Từ chối quyền camera");
+        if(granted)startCamera();else cameraError("Bạn chưa cấp quyền camera");
     });
     @Override protected void onReady(Bundle state){
         setContentView(R.layout.activity_scan);
-        mode=getIntent().getIntExtra(EXTRA_MODE,MODE_ATTENDANCE);sessionId=getIntent().getStringExtra(EXTRA_SESSION_ID);
+        speaker=new VietnameseSpeaker(this);
+        mode=getIntent().getIntExtra(EXTRA_MODE,MODE_ATTENDANCE)==MODE_ATTENDANCE?MODE_ATTENDANCE:MODE_VERIFY_CARD;sessionId=getIntent().getStringExtra(EXTRA_SESSION_ID);
         title=findViewById(R.id.tv_scan_header_title);subtitle=findViewById(R.id.tv_scan_header_subtitle);
         status=findViewById(R.id.tv_result_status_title);info=findViewById(R.id.tv_result_student_info);time=findViewById(R.id.tv_result_time_badge);
         error=findViewById(R.id.tv_camera_error);errorOverlay=findViewById(R.id.ll_camera_error_overlay);reticle=findViewById(R.id.fl_reticle_frame);
         flash=findViewById(R.id.btn_scan_flash);flash.setEnabled(false);
-        confirm=findViewById(R.id.btn_link_confirm);confirm.setEnabled(false);
         findViewById(R.id.btn_scan_back).setOnClickListener(v->finish());
         findViewById(R.id.ll_scan_actions_attendance).setVisibility(mode==MODE_ATTENDANCE?View.VISIBLE:View.GONE);
-        findViewById(R.id.ll_scan_actions_link).setVisibility(mode==MODE_LINK_CARD?View.VISIBLE:View.GONE);
         findViewById(R.id.btn_fallback_manual).setVisibility(mode==MODE_ATTENDANCE?View.VISIBLE:View.GONE);
         findViewById(R.id.btn_scan_manual_input).setOnClickListener(v->manual());
         findViewById(R.id.btn_fallback_manual).setOnClickListener(v->manual());
@@ -61,12 +60,6 @@ public class ScanActivity extends DataActivity {
             torch=!torch;camera.getCameraControl().enableTorch(torch);
             flash.setImageResource(torch?R.drawable.ic_flash_on:R.drawable.ic_flash_off);
         }});
-        findViewById(R.id.btn_link_rescan).setOnClickListener(v->{lastRaw=null;lastCode=null;confirm.setEnabled(false);modal=false;pauseScanner();show("Chưa đọc được mã","Đưa một thẻ vào khung","");});
-        confirm.setOnClickListener(v->{
-            if(lastRaw==null)return;
-            Intent result=new Intent();result.putExtra(EXTRA_SCANNED_BARCODE,lastRaw);result.putExtra("barcode_format",lastFormat);
-            setResult(RESULT_OK,result);finish();
-        });
         getSupportFragmentManager().setFragmentResultListener("attendance_changed",this,(key,result)->refresh());
         getSupportFragmentManager().registerFragmentLifecycleCallbacks(new androidx.fragment.app.FragmentManager.FragmentLifecycleCallbacks(){
             @Override public void onFragmentDetached(androidx.fragment.app.FragmentManager manager,androidx.fragment.app.Fragment fragment){
@@ -74,7 +67,6 @@ public class ScanActivity extends DataActivity {
             }
         },false);
         modal=getSupportFragmentManager().findFragmentByTag("manual_attendance")!=null;
-        if(state!=null){lastRaw=state.getString("raw");lastFormat=state.getString("format");if(lastRaw!=null){modal=true;confirm.setEnabled(true);show("Đã đọc mã",lastRaw+" · "+lastFormat,"");}}
         uiReady=true;refresh();requestCamera();
     }
     private void requestCamera(){
@@ -84,12 +76,12 @@ public class ScanActivity extends DataActivity {
     private void startCamera(){
         if(!uiReady||isFinishing())return;
         if(scanner!=null)scanner.close();
+        camera=null;torch=false;flash.setImageResource(R.drawable.ic_flash_off);
         errorOverlay.setVisibility(View.GONE);reticle.setVisibility(View.VISIBLE);flash.setEnabled(false);
-        findViewById(R.id.tv_scan_instruction).setVisibility(View.VISIBLE);
         PreviewView preview=findViewById(R.id.camera_preview);
         scanner=new CameraScanner(this,this,preview,new CameraScanner.Listener(){
             @Override public void onCode(String raw,String format){handleCode(raw,format);}
-            @Override public void onMessage(String message){if(!modal&&SystemClock.elapsedRealtime()-lastResultAt>4000)status.setText(message);}
+            @Override public void onMessage(String message){ /* Keep decoder guidance out of the scan interface. */ }
             @Override public void onCamera(Camera value){camera=value;flash.setEnabled(value.getCameraInfo().hasFlashUnit());}
             @Override public void onError(String message){cameraError(message);}
         });
@@ -97,28 +89,34 @@ public class ScanActivity extends DataActivity {
     }
     private void cameraError(String message){
         if(!uiReady)return;error.setText(message);errorOverlay.setVisibility(View.VISIBLE);reticle.setVisibility(View.GONE);flash.setEnabled(false);
-        findViewById(R.id.tv_scan_instruction).setVisibility(View.GONE);
-        ((TextView)findViewById(R.id.btn_camera_retry)).setText(message.startsWith("Từ chối")&&!shouldShowRequestPermissionRationale(Manifest.permission.CAMERA)?"Mở cài đặt ứng dụng":"Thử lại");
+        ((TextView)findViewById(R.id.btn_camera_retry)).setText(message.startsWith("Bạn chưa cấp quyền")&&!shouldShowRequestPermissionRationale(Manifest.permission.CAMERA)?"Mở cài đặt ứng dụng":"Thử lại");
     }
     private void handleCode(String raw,String format){
         if(modal||busy)return;
         long elapsed=SystemClock.elapsedRealtime();if(raw.equals(lastCode)&&elapsed-lastCodeAt<2500)return;
         lastCode=raw;lastCodeAt=elapsed;
-        if(mode==MODE_LINK_CARD){lastRaw=raw;lastFormat=format;modal=true;pauseScanner();confirm.setEnabled(true);show("Đã đọc mã",raw+"\nĐịnh dạng: "+format,"");return;}
+        if(mode==MODE_VERIFY_CARD){
+            busy=true;pauseScanner();
+            Tasks.run(this,null,()->AttendanceRepository.getInstance().verifyCard(raw,format),student->{
+                busy=false;pauseScanner();show("Thẻ trùng khớp",student.getFullName()+" · MSSV: "+student.getMssv()+"\nNgày sinh: "+(student.getBirthDate()==null?"—":student.getBirthDate()),"Chỉ tra cứu thông tin thẻ");
+                speaker.speak(getString(R.string.speech_scan_success,student.getFullName()),false);
+            },message->{busy=false;pauseScanner();show(message,raw,"");});return;
+        }
         busy=true;pauseScanner();
-        Tasks.run(this,null,()->AttendanceRepository.getInstance().scan(sessionId,raw,System.currentTimeMillis()),record->{
+        Tasks.run(this,null,()->AttendanceRepository.getInstance().scan(sessionId,raw,format,System.currentTimeMillis()),record->{
             busy=false;pauseScanner();show("Ghi nhận thành công",record.getNameSnapshot()+" · "+record.getStatusDisplayName(),record.getCheckInTime());feedback();refresh();
-        },message->{busy=false;pauseScanner();show(message,raw+" · "+format,"");refresh();});
+            speaker.speak(getString(R.string.speech_scan_success,record.getNameSnapshot()),false);
+        },message->{busy=false;pauseScanner();show(message,raw,"");refresh();});
     }
     private void show(String result,String details,String recorded){
-        lastResultAt=SystemClock.elapsedRealtime();status.setText(result);info.setText(details);time.setText(recorded);
-        ((ImageView)findViewById(R.id.iv_result_icon)).setImageResource(result.startsWith("Ghi nhận thành công")?R.drawable.ic_check_circle:result.startsWith("Đã đọc")?R.drawable.ic_barcode:R.drawable.ic_cancel);
+        status.setText(result);info.setText(details);info.setVisibility(View.VISIBLE);time.setText(recorded);
+        ((ImageView)findViewById(R.id.iv_result_icon)).setImageResource((result.startsWith("Ghi nhận thành công")||result.equals("Thẻ trùng khớp"))?R.drawable.ic_check_circle:result.startsWith("Đã đọc")?R.drawable.ic_barcode:R.drawable.ic_cancel);
         View card=findViewById(R.id.card_scan_result);card.animate().cancel();card.setAlpha(.4f);card.animate().alpha(1f).setDuration(220).start();
     }
     private void refresh(){
-        if(mode==MODE_LINK_CARD){title.setText("Gắn hoặc đổi mã thẻ");subtitle.setText("Đọc một mã rồi xác nhận trên hồ sơ");return;}
+        if(mode==MODE_VERIFY_CARD){title.setText("Quét kiểm tra thẻ");subtitle.setText("Tra cứu hồ sơ · Không ghi điểm danh");return;}
         AttendanceSession s=AttendanceRepository.getInstance().getSessionById(sessionId);
-        if(s==null){finish();return;}
+        if(s==null||!AttendanceRepository.getInstance().canControlSession(sessionId)){finish();return;}
         if(s.getStatus()==AttendanceSession.SessionStatus.CLOSED){resultScreen();return;}
         if(s.getStatus()!=AttendanceSession.SessionStatus.OPEN){finish();return;}
         title.setText(s.getTitle());int checked=AttendanceRepository.getInstance().getCheckedInTotal(sessionId);
@@ -140,7 +138,10 @@ public class ScanActivity extends DataActivity {
         dialog.setOnDismissListener(d->{modal=false;pauseScanner();});dialog.show();
     }
     private void resultScreen(){Intent i=new Intent(this,SessionResultActivity.class);i.putExtra(SessionResultActivity.EXTRA_SESSION_ID,sessionId);startActivity(i);finish();}
-    private void pauseScanner(){if(scanner!=null)scanner.setPaused(modal||busy||!getLifecycle().getCurrentState().isAtLeast(androidx.lifecycle.Lifecycle.State.RESUMED));}
+    // DataActivity calls onDataResume from inside onResume, before AndroidX necessarily
+    // dispatches ON_RESUME. Using the registry there can leave analysis paused forever
+    // even though CameraX later starts its preview. Resume explicitly in onPostResume.
+    private void pauseScanner(){if(scanner!=null)scanner.setPaused(modal||busy||!activityResumed);}
     private void feedback(){
         android.content.SharedPreferences p=getSharedPreferences("settings",MODE_PRIVATE);
         if(p.getBoolean("sound",true)){
@@ -153,7 +154,7 @@ public class ScanActivity extends DataActivity {
         }
     }
     @Override protected void onDataResume(){if(uiReady){refresh();pauseScanner();if(scanner==null&&ContextCompat.checkSelfPermission(this,Manifest.permission.CAMERA)==PackageManager.PERMISSION_GRANTED)startCamera();}}
-    @Override protected void onPause(){if(scanner!=null)scanner.setPaused(true);super.onPause();}
+    @Override protected void onPostResume(){super.onPostResume();activityResumed=true;pauseScanner();}
+    @Override protected void onPause(){activityResumed=false;pauseScanner();super.onPause();}
     @Override protected void onDestroy(){if(scanner!=null)scanner.close();super.onDestroy();}
-    @Override protected void onSaveInstanceState(@androidx.annotation.NonNull Bundle state){state.putString("raw",lastRaw);state.putString("format",lastFormat);super.onSaveInstanceState(state);}
 }

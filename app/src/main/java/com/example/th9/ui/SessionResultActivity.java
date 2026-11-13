@@ -55,11 +55,13 @@ public class SessionResultActivity extends com.example.th9.ui.DataActivity {
     private EditText etSearch;
     private RecyclerView rvRecords;
     private AttendanceRecordAdapter adapter;
+    private VietnameseSpeaker speaker;
 
     @Override
     protected void onReady(Bundle savedInstanceState) {
 
         setContentView(R.layout.activity_session_result);
+        speaker = new VietnameseSpeaker(this);
 
         sessionId = getIntent().getStringExtra(EXTRA_SESSION_ID);
 
@@ -133,6 +135,7 @@ public class SessionResultActivity extends com.example.th9.ui.DataActivity {
     }
 
     private void setupListeners() {
+        findViewById(R.id.btn_result_read_aloud).setOnClickListener(v -> readResults());
         chipGroupFilter.setOnCheckedStateChangeListener((group, checkedIds) -> {
             filterRecords(etSearch.getText() != null ? etSearch.getText().toString() : "");
         });
@@ -148,7 +151,9 @@ public class SessionResultActivity extends com.example.th9.ui.DataActivity {
 
     private void loadSessionData() {
         session = AttendanceRepository.getInstance().getSessionById(sessionId);
-        if (session == null) return;
+        if (session == null) {finish();return;}
+        findViewById(R.id.btn_result_read_aloud).setVisibility(
+                session.getStatus() == AttendanceSession.SessionStatus.CLOSED ? View.VISIBLE : View.GONE);
 
         tvTitle.setText(session.getTitle());
         ClassRoom cr = AttendanceRepository.getInstance().getClassById(session.getClassId());
@@ -157,11 +162,23 @@ public class SessionResultActivity extends com.example.th9.ui.DataActivity {
         }
 
         String finishText = session.getFinishedTime() != null ? session.getFinishedTime() : "Đang mở";
-        tvFinishInfo.setText("Sĩ số: " + session.getExpectedCount() + " SV • " + finishText);
+        tvFinishInfo.setText("Sĩ số: " + session.getExpectedCount() + " sinh viên • " + finishText+"\n"+session.getScheduleLabel()+"\nGiảng viên: "+session.getTeacherNameSnapshot());
 
         buildDynamicSummaryCardsInJava();
         updateFilterChipLabels();
         filterRecords(etSearch.getText() != null ? etSearch.getText().toString() : "");
+    }
+
+    private void readResults() {
+        AttendanceRepository repo = AttendanceRepository.getInstance();
+        AttendanceSession current = repo.getSessionById(sessionId);
+        if (current == null || current.getStatus() != AttendanceSession.SessionStatus.CLOSED) return;
+        int present = repo.getPresentCount(sessionId);
+        int absent = repo.getAbsentCount(sessionId);
+        int late = repo.getLateCount(sessionId);
+        int total = current.getExpectedCount();
+        int rate = total > 0 ? (present + late) * 100 / total : 0;
+        speaker.speak(getString(R.string.speech_result_summary, present, absent, late, rate), true);
     }
 
     /**
@@ -222,7 +239,7 @@ public class SessionResultActivity extends com.example.th9.ui.DataActivity {
         MaterialCardView cardRate = createSummaryCard(
                 "Chuyên cần",
                 overallPct + "%",
-                (presentCount + lateCount) + "/" + total + " SV",
+                (presentCount + lateCount) + "/" + total + " sinh viên",
                 R.drawable.ic_stats,
                 Color.parseColor("#1E3A8A"),
                 Color.parseColor("#DBEAFE"),
@@ -371,6 +388,7 @@ public class SessionResultActivity extends com.example.th9.ui.DataActivity {
             }
             return true;
         } else if (item.getItemId() == R.id.context_change_status) {
+            if(AttendanceRepository.getInstance().isAdmin())return true;
             showChangeStatusDialog(record, s);
             return true;
         }

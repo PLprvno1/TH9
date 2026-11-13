@@ -30,6 +30,8 @@ public class StudentAdapter extends RecyclerView.Adapter<StudentAdapter.StudentV
         void onStudentLongClick(Student student, int position, View anchorView);
     }
 
+    public interface OnStudentDeleteListener { void onDelete(Student student); }
+    private final OnStudentDeleteListener deleteListener;
     private final Context context;
     private final List<Student> students = new ArrayList<>();
     private final OnStudentClickListener clickListener;
@@ -37,6 +39,11 @@ public class StudentAdapter extends RecyclerView.Adapter<StudentAdapter.StudentV
     private int selectedPosition = -1;
 
     public StudentAdapter(Context context, OnStudentClickListener clickListener, OnStudentLongClickListener longClickListener) {
+        this(context,clickListener,longClickListener,null);
+    }
+
+    public StudentAdapter(Context context, OnStudentClickListener clickListener, OnStudentLongClickListener longClickListener, OnStudentDeleteListener deleteListener) {
+        this.deleteListener=deleteListener;
         this.context = context;
         this.clickListener = clickListener;
         this.longClickListener = longClickListener;
@@ -75,8 +82,15 @@ public class StudentAdapter extends RecyclerView.Adapter<StudentAdapter.StudentV
     @Override
     public void onBindViewHolder(@NonNull StudentViewHolder holder, int position) {
         Student s = students.get(position);
+        boolean canDelete=deleteListener!=null&&com.example.th9.data.AttendanceRepository.getInstance().isAdmin();
+        View delete=holder.itemView.findViewById(R.id.btn_student_delete);
+        delete.setVisibility(canDelete?View.VISIBLE:View.GONE);
+        delete.setOnClickListener(canDelete?v->deleteListener.onDelete(s):null);
+        holder.tvBarcodeBadge.setVisibility(canDelete?View.GONE:View.VISIBLE);
         holder.tvName.setText(s.getFullName());
-        holder.tvMssv.setText("MSSV: " + s.getMssv());
+        com.example.th9.model.ClassRoom main=com.example.th9.data.AttendanceRepository.getInstance().getClassById(s.getPrimaryClassId());
+        holder.tvMssv.setText("MSSV: " + s.getMssv()+"\n"+(main==null?"Chưa chọn lớp chính":main.getName())+" • "+(s.getCourse()==null?"Chưa có khóa học":s.getCourse()));
+        android.widget.ImageView photo=holder.flAvatar.findViewWithTag("photo");if(photo==null){photo=new android.widget.ImageView(context);photo.setTag("photo");photo.setScaleType(android.widget.ImageView.ScaleType.CENTER_CROP);holder.flAvatar.addView(photo,new FrameLayout.LayoutParams(-1,-1));}com.example.th9.data.StudentPhotos.show(photo,s.getPhotoPath());
         holder.tvInitial.setText(s.getInitial());
 
         // Avatar background color
@@ -86,13 +100,13 @@ public class StudentAdapter extends RecyclerView.Adapter<StudentAdapter.StudentV
         holder.flAvatar.setBackground(bg);
 
         // Barcode badge
-        if (s.hasCardBarcode()) {
-            holder.tvBarcodeBadge.setText(s.getCardBarcode());
+        if (s.getMssv()!=null && !s.getMssv().isEmpty()) {
+            holder.tvBarcodeBadge.setText("Thẻ sẵn sàng");
             holder.tvBarcodeBadge.setBackgroundResource(R.drawable.bg_badge_present);
             holder.tvBarcodeBadge.setTextColor(ContextCompat.getColor(context, R.color.on_status_present_container));
             holder.tvBarcodeBadge.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_barcode, 0, 0, 0);
         } else {
-            holder.tvBarcodeBadge.setText("Chưa gắn mã");
+            holder.tvBarcodeBadge.setText("Chưa có thẻ điện tử");
             holder.tvBarcodeBadge.setBackgroundResource(R.drawable.bg_badge_unchecked);
             holder.tvBarcodeBadge.setTextColor(ContextCompat.getColor(context, R.color.text_secondary));
             holder.tvBarcodeBadge.setCompoundDrawablesWithIntrinsicBounds(0, 0, 0, 0);
@@ -137,9 +151,10 @@ public class StudentAdapter extends RecyclerView.Adapter<StudentAdapter.StudentV
         public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
             menu.setHeaderTitle(tvName.getText());
             menu.add(Menu.NONE, R.id.context_view_profile, 1, R.string.context_view_profile);
-            menu.add(Menu.NONE, R.id.context_edit_student, 2, R.string.context_edit_student);
-            menu.add(Menu.NONE, R.id.context_link_card, 3, R.string.context_link_card);
-            menu.add(Menu.NONE,7003,4,"Gỡ khỏi lớp");
+            if(com.example.th9.data.AttendanceRepository.getInstance().isAdmin())menu.add(Menu.NONE, R.id.context_edit_student, 2, R.string.context_edit_student);
+            menu.add(Menu.NONE,7401,3,"Xem thẻ sinh viên");
+            if(com.example.th9.data.AttendanceRepository.getInstance().isAdmin() && v.getContext() instanceof com.example.th9.ui.StudentsActivity){menu.add(Menu.NONE,7402,4,"Xóa sinh viên");}
+            else if(com.example.th9.data.AttendanceRepository.getInstance().isAdmin())menu.add(Menu.NONE,7003,4,"Gỡ khỏi lớp");
         }
     }
 }

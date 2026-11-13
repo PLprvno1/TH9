@@ -1,0 +1,424 @@
+TÀI LIỆU THƯ VIỆN VÀ CÁC LUỒNG CHÍNH CỦA ỨNG DỤNG
+======================================================================
+
+Tài liệu này mô tả theo mã nguồn hiện có trong app/src/main và cấu hình
+app/build.gradle.kts, gradle/libs.versions.toml. Đây là ứng dụng Android
+quản lý sinh viên, lớp học, thời khóa biểu và điểm danh. Dữ liệu nghiệp vụ
+được lưu trên thiết bị bằng Room/SQLite; mã nguồn hiện tại không khai báo
+dịch vụ máy chủ hay cơ sở dữ liệu trực tuyến.
+
+
+1. THƯ VIỆN VÀ CÔNG CỤ
+======================================================================
+
+Thư viện dùng khi chạy ứng dụng
+-------------------------------
+
+1) AndroidX Room Runtime — 2.8.4
+   Room cung cấp lớp truy cập SQLite bằng entity, DAO, truy vấn SQL và giao
+   dịch. AttendanceRepository là lớp trung gian giữa giao diện và Room.
+   Các bảng chính gồm sinh viên, lớp, thành viên lớp, lịch học, buổi điểm
+   danh, kết quả điểm danh, tài khoản và phân công giảng viên.
+
+2) AndroidX Room Compiler — 2.8.4
+   Annotation processor sinh phần cài đặt DAO và kiểm tra truy vấn Room khi
+   biên dịch. Đây là công cụ biên dịch, không phải thư viện giao diện lúc chạy.
+
+3) CameraX Camera2, Camera Lifecycle, Camera View — 1.5.1
+   Camera2 kết nối phần cứng camera; Camera Lifecycle gắn camera với vòng
+   đời Activity; Camera View hiển thị hình ảnh xem trước. ImageAnalysis
+   cung cấp từng khung hình cho bộ đọc mã vạch.
+
+4) Google ML Kit Barcode Scanning — 17.3.0
+   Bộ giải mã chính cho mã vạch 1D từ hình camera. Ứng dụng cấu hình các định
+   dạng Code 128, Code 39, Code 93, Codabar, EAN-13, EAN-8, ITF, UPC-A và
+   UPC-E.
+
+5) ZXing Core — 3.5.3
+   Có hai nhiệm vụ trong app:
+   - Tạo ảnh mã vạch CODE_128 trên thẻ sinh viên.
+   - Đọc dự phòng mã vạch 1D nếu ML Kit không tìm thấy mã trong khung hình.
+   Bộ đọc dự phòng đọc mặt phẳng độ sáng Y của ảnh camera, thử ảnh đảo màu
+   và ảnh xoay. ZXing không được dùng để tạo mã QR trong luồng thẻ hiện tại.
+
+6) Apache Commons CSV — 1.10.0
+   Đọc CSV theo quy tắc RFC 4180 và ghi CSV kết quả điểm danh. Hỗ trợ dấu
+   phẩy nằm trong dấu ngoặc kép, dấu ngoặc kép thoát và trường nhiều dòng.
+   Bộ đọc cũng bỏ ký tự BOM UTF-8 ở đầu tệp.
+
+7) AndroidX Activity KTX — 1.13.0
+   Cung cấp Activity Result API được dùng để mở bộ chọn tài liệu/ảnh, lưu
+   ảnh PNG và nhận kết quả từ các màn hình hệ thống.
+
+8) AndroidX AppCompat — 1.8.0
+   Hỗ trợ Activity tương thích, Toolbar, hộp thoại và chủ đề giao diện.
+
+9) AndroidX ConstraintLayout — 2.2.2
+   Bố trí các thành phần giao diện XML theo ràng buộc vị trí và kích thước.
+
+10) Google Material Components — 1.14.0
+    Các thành phần giao diện như nút, thẻ, hộp thoại, trường nhập, chip và
+    thanh điều hướng dưới.
+
+Thư viện chỉ dành cho kiểm thử
+-----------------------------
+
+- JUnit — 4.13.2: viết và chạy kiểm thử Java.
+- AndroidX Test Ext JUnit — 1.3.0: hỗ trợ kiểm thử trên Android.
+- Espresso Core — 3.7.0: thao tác và kiểm tra giao diện trong kiểm thử UI.
+- Room Testing — 2.8.4: hỗ trợ kiểm thử Room.
+
+Các dependency trên được khai báo trong testImplementation hoặc
+androidTestImplementation nên không tham gia luồng sử dụng thông thường.
+
+API Android có sẵn, không phải dependency riêng
+------------------------------------------------
+
+- TextToSpeech đọc tên sinh viên và kết quả bằng giọng tiếng Việt của thiết
+  bị. Ứng dụng yêu cầu ngôn ngữ vi-VN; nếu thiết bị thiếu dữ liệu giọng đọc,
+  app hiển thị thông báo.
+- Canvas, Bitmap và Paint dùng để vẽ ảnh thẻ.
+- SecureRandom, PBKDF2 và SHA-256 dùng cho mã ngẫu nhiên và xác thực.
+- FileProvider chia sẻ tệp ảnh qua URI được cấp quyền đọc.
+- ZipOutputStream và XmlSerializer tạo nội dung tệp XLSX.
+
+Cấu hình nền tảng trong app/build.gradle.kts: Java 11, minSdk 24,
+compileSdk 37. Android Gradle Plugin 9.3.3 là plugin dựng ứng dụng, không
+phải thư viện mà app gọi khi chạy.
+
+Điều hướng được viết bằng Activity, Menu, BottomNavigationView và Intent
+explicit. Không có khai báo Android Jetpack Navigation Component hay tệp
+navigation graph trong dependency hiện tại.
+
+
+2. CẤU TRÚC ỨNG DỤNG VÀ LƯU TRỮ
+======================================================================
+
+- AttendanceApp khởi tạo AttendanceRepository khi tiến trình ứng dụng bắt
+  đầu và áp dụng tùy chọn giao diện sáng/tối.
+- DataActivity chờ tải dữ liệu Room trên luồng nền, kiểm tra đăng nhập và
+  vai trò trước khi cho màn hình quản lý hoặc điểm danh mở.
+- Tasks dùng một hàng đợi IO dùng chung để chạy thao tác đọc/ghi nặng ngoài
+  luồng giao diện. Kết quả sau đó được trả về luồng UI.
+- AttendanceRepository là cổng dữ liệu. Mọi thay đổi quan trọng chạy trong
+  giao dịch Room; sau khi ghi, repository tải lại snapshot cho giao diện.
+- AttendanceDatabase hiện ở schema version 6. Các migration nâng cấp lần
+  lượt từ phiên bản cũ, không dùng destructive migration để xóa lịch sử.
+
+Những bảng/entity đáng chú ý:
+
+- Classroom: lớp học.
+- Student: hồ sơ sinh viên, MSSV, số điện thoại, thông tin cá nhân, mã thẻ,
+  đường dẫn ảnh và trạng thái lưu trữ.
+- ClassMembership: quan hệ sinh viên-lớp. Một sinh viên có thể thuộc nhiều
+  lớp; lớp và danh sách sinh viên được quản lý tách biệt.
+- ClassSchedule: lịch lặp theo ngày trong tuần, ca và khoảng thời gian.
+- AttendanceSession: buổi điểm danh với trạng thái DRAFT, OPEN hoặc CLOSED.
+- AttendanceRecord: trạng thái từng sinh viên trong một buổi.
+- UserAccount, TeacherClass và LocalLogin: tài khoản, phân công và phiên
+  đăng nhập cục bộ.
+- StudentNumberSequence: số cuối đã cấp theo từng niên khóa.
+
+Cơ sở dữ liệu áp dụng chỉ mục duy nhất cho MSSV, số điện thoại và các trường
+mã thẻ. Khi mở buổi điểm danh, app lưu ảnh chụp MSSV, họ tên, tên lớp và
+thông tin giảng viên tại thời điểm đó để giữ được lịch sử nếu hồ sơ về sau
+thay đổi hoặc sinh viên rời lớp.
+
+Migration từ schema 5 lên 6 tự gán số điện thoại giả gồm 10 chữ số cho hồ sơ
+cũ bị thiếu, sai định dạng hoặc bị trùng; sau đó mới tạo chỉ mục duy nhất
+cho số điện thoại.
+
+Ảnh hồ sơ được sao chép vào thư mục riêng của ứng dụng, không lưu URI tạm
+của bộ chọn ảnh. Tệp ảnh nằm trong files/student_photos; đường dẫn nội bộ
+được lưu vào hồ sơ sinh viên.
+
+
+3. TÀI KHOẢN, MÃ BĂM VÀ PHÂN QUYỀN
+======================================================================
+
+Tạo tài khoản và đăng nhập
+-------------------------
+
+1) Khi chưa có UserAccount, màn hình đăng nhập chuyển sang bước tạo tài
+   khoản quản trị đầu tiên.
+2) Sau đó quản trị viên đăng nhập bằng tên tài khoản và mật khẩu. Quản trị
+   viên có thể tạo, khóa/mở tài khoản giảng viên và phân công lớp.
+3) Giảng viên chỉ xem/điều khiển các lớp được phân công. Quản trị viên quản
+   lý dữ liệu nhưng luồng điểm danh yêu cầu đăng nhập bằng tài khoản giảng
+   viên.
+4) Sau 5 lần nhập sai liên tiếp, tài khoản bị khóa tạm thời 60 giây.
+5) Phiên đăng nhập là token ngẫu nhiên 32 byte, hết hạn sau 7 ngày. Chuỗi
+   token được giữ trong SharedPreferences; Room chỉ lưu SHA-256 của token.
+   Khi mở màn hình, AuthStore kiểm tra token với bản ghi LocalLogin.
+
+Cách băm mật khẩu
+-----------------
+
+Mật khẩu dạng rõ không được ghi vào Room. PasswordHasher làm như sau:
+
+- Sinh salt ngẫu nhiên 16 byte bằng SecureRandom cho mỗi lần đặt mật khẩu.
+- Dùng PBKDF2WithHmacSHA256 với 600.000 vòng lặp và đầu ra 256 bit.
+- Nếu thiết bị Java không có thuật toán SHA-256 này, dùng
+  PBKDF2WithHmacSHA1 với 1.300.000 vòng lặp.
+- Lưu salt và kết quả băm dưới dạng Base64, đồng thời lưu tên thuật toán và
+  số vòng lặp để lần đăng nhập biết cách tính lại.
+- So sánh hai kết quả bằng MessageDigest.isEqual để tránh so sánh chuỗi theo
+  từng ký tự có thời gian thay đổi theo vị trí sai khác.
+- Mật khẩu được yêu cầu dài từ 8 đến 128 ký tự.
+
+Token phiên đăng nhập dùng thêm SHA-256 riêng: token ngẫu nhiên được tạo,
+chỉ bản băm token được lưu trong Room. Đây là xác thực phiên, không phải
+cách băm mật khẩu.
+
+Phân biệt mã băm với mã thẻ
+--------------------------
+
+Mã vạch trên thẻ không phải hash và không được mã hóa. CODE_128 chỉ là cách
+biểu diễn chuỗi MSSV thành các vạch đen trắng để camera đọc lại. Khi quét,
+app tra chuỗi đọc được trong Room để tìm sinh viên.
+
+CardCodes cũng có hàm tạo mã định danh ngẫu nhiên dạng TDMU1- theo sau bởi
+12 ký tự lấy từ bộ ký tự 23456789ABCDEFGHJKLMNPQRSTUVWXYZ. Mã này được tạo
+bằng SecureRandom và kiểm tra không trùng trong dữ liệu sinh viên. Nó là
+mã nhận diện, không phải kết quả hash.
+
+Trong luồng tạo sinh viên chính hiện tại, registerStudent và nhập CSV gán
+digitalCardCode bằng MSSV. StudentCardView tạo mã vạch CODE_128 từ MSSV.
+Một số luồng cấp hồ sơ/thẻ cũ hoặc cấp riêng vẫn có thể tạo mã TDMU1- qua
+CardCodes. Mã này được bộ quét nhận diện; tuy nhiên hình thẻ hiện tại vẫn
+vẽ mã vạch từ MSSV. Cần nhớ phân biệt chuỗi mã định danh trong dữ liệu với
+chuỗi thực tế được StudentCardView đưa vào ảnh mã vạch.
+
+
+4. LUỒNG QUẢN LÝ SINH VIÊN VÀ NHẬP CSV
+======================================================================
+
+Thêm sinh viên trên giao diện
+-----------------------------
+
+1) Quản trị viên mở màn hình Thêm sinh viên.
+2) Nhập họ tên, số điện thoại, ngày sinh, niên khóa, giới tính; ảnh hồ sơ
+   có thể bỏ qua. Số điện thoại phải có đúng 10 chữ số và không được trùng
+   với số đã lưu.
+3) Ngày sinh theo dạng dd/MM/yyyy, không ở tương lai. Niên khóa có dạng
+   yyyy-yyyy hoặc yyyy–yyyy và năm kết thúc phải lớn hơn năm bắt đầu.
+4) StudentSaveViewModel gọi AttendanceRepository.registerStudent để cấp
+   MSSV và lưu hồ sơ trong một giao dịch.
+5) MSSV được lập bằng cách ghép hai năm niên khóa rồi thêm số thứ tự 4 chữ
+   số. Ví dụ khóa 2022–2026 có tiền tố 20222026 và MSSV đầu tiên là
+   202220260001. Sequence kiểm tra cả mã cũ và hồ sơ đã lưu trữ để không
+   cấp lại mã từng dùng.
+6) Nếu mở form từ một lớp, sinh viên được thêm vào lớp đó trong cùng giao
+   dịch. Nếu không, hồ sơ chưa thuộc lớp nào.
+
+Sửa hồ sơ giữ nguyên MSSV đã cấp. Xóa hồ sơ thực tế chuyển hồ sơ sang trạng
+thái archived và gỡ quan hệ lớp; cách này giữ liên kết với lịch sử điểm danh.
+
+Nhập CSV
+--------
+
+1) Màn hình nhập mở bộ chọn tài liệu Android và đọc tệp UTF-8.
+2) Tệp cần đúng các cột:
+   ho_ten, ngay_sinh, nien_khoa, gioi_tinh, so_dien_thoai
+3) CsvTransfer dùng Apache Commons CSV đọc hàng có dấu phẩy, dấu nháy kép,
+   trường nhiều dòng và BOM UTF-8.
+   Tệp được giới hạn tối đa 20.000 dòng sinh viên.
+4) Ứng dụng hiển thị bản xem trước, kiểm tra họ tên, ngày sinh, niên khóa,
+   giới tính và số điện thoại. Số điện thoại phải gồm 10 chữ số, không trùng
+   với sinh viên đã có hoặc một dòng khác trong cùng tệp.
+5) Nếu có lỗi, nút xác nhận bị khóa. Khi xác nhận, toàn bộ danh sách được
+   kiểm tra và ghi bằng một giao dịch; nếu còn lỗi thì không nhập một phần.
+6) MSSV được tự cấp theo niên khóa như khi thêm thủ công. Từ màn hình nhập
+   hiện tại, danh sách mới chưa được thêm vào lớp.
+
+Tệp test_sinh_vien.csv ở thư mục gốc có 5 dòng test1 đến test5 và đúng
+định dạng cột mà bộ nhập yêu cầu.
+
+
+5. LỚP, GIẢNG VIÊN VÀ THỜI KHÓA BIỂU
+======================================================================
+
+- Quản trị viên tạo/sửa lớp, tìm sinh viên trong hệ thống rồi thêm hoặc
+  gỡ thành viên lớp. Một sinh viên có thể học nhiều lớp.
+- Quản trị viên tạo tài khoản giảng viên và phân công lớp. Mỗi lớp chỉ có
+  tối đa một giảng viên được phân công tại một thời điểm. Một giảng viên có
+  thể phụ trách nhiều lớp nếu lịch không chồng nhau.
+- Thời khóa biểu lưu lớp, ca sáng/chiều, khoảng ngày, thứ trong tuần và
+  giờ bắt đầu/kết thúc. ScheduleRules kiểm tra thời gian, ngày và xung đột.
+- Trang chính của giảng viên chỉ gợi ý lịch đang diễn ra. Việc dựng danh
+  sách gợi ý là thao tác đọc: tự nó không tạo buổi và không ghi điểm danh.
+- Khi giảng viên nhấn gợi ý, app mở SessionFormActivity. Giảng viên xem lại
+  tên buổi, thời gian và có thể bật/chọn mốc đi muộn trước khi bắt đầu.
+  Mặc định mốc đi muộn tắt; hệ thống không tự gán một mốc trễ cố định theo
+  thời khóa biểu.
+- Các lớp không có trong lịch có thể tạo buổi ngoài lịch, ví dụ buổi học bù.
+
+
+6. LUỒNG ĐIỂM DANH
+======================================================================
+
+Mở buổi
+-------
+
+1) Giảng viên tạo buổi thủ công hoặc mở gợi ý từ thời khóa biểu và hoàn tất
+   màn hình thiết lập.
+2) AttendanceRepository xác nhận quyền điều khiển, lớp và trạng thái buổi.
+3) Khi chuyển sang OPEN, hệ thống lấy danh sách lớp tại thời điểm mở và tạo
+   AttendanceRecord trạng thái PENDING cho từng sinh viên. MSSV và họ tên
+   được chụp vào record để bảo toàn lịch sử.
+4) Không thể mở đồng thời nhiều buổi cho cùng giảng viên hoặc cùng lớp.
+
+Quét thẻ bằng camera
+--------------------
+
+1) ScanActivity yêu cầu quyền CAMERA rồi mở CameraScanner bằng CameraX.
+2) CameraX lấy luồng hình YUV_420_888 và giữ khung mới nhất để tránh hàng
+   đợi ảnh bị dồn. InputImage chuyển khung cùng góc xoay sang ML Kit.
+3) ML Kit đọc các định dạng mã vạch 1D đã cấu hình. Nếu giải mã thất bại
+   hoặc không thấy mã, BarcodeFallback thử ZXing trên mặt phẳng Y, ảnh đảo
+   màu và ảnh xoay. Bộ quét nhận diện toàn ảnh camera, không bắt buộc mã nằm
+   trong khung trang trí trên màn hình.
+4) Nếu tìm thấy nhiều mã trong cùng ảnh, màn hình yêu cầu chỉ để một thẻ.
+   CameraScanner hỗ trợ chạm để lấy nét, zoom tay và gợi ý zoom.
+5) ScanActivity gửi chuỗi đã đọc cùng định dạng mã tới repository. MSSV,
+   cardCode hoặc digitalCardCode được tra cứu trong Room.
+6) Nếu mã hợp lệ và sinh viên thuộc roster của buổi, repository đổi trạng
+   thái PENDING một lần thành PRESENT hoặc LATE. Quét lại cùng sinh viên
+   không tạo lần điểm danh thứ hai.
+7) Khi thành công, màn hình hiện tên, trạng thái, thời điểm; có phản hồi âm
+   thanh/rung theo cấu hình và VietnameseSpeaker đọc “quét thành công” cùng
+   tên người đó. Trong chế độ kiểm tra thẻ, app chỉ tra cứu và không ghi
+   AttendanceRecord.
+
+Đi muộn, điểm danh thủ công và kết thúc buổi
+-------------------------------------------
+
+- Nếu giảng viên không bật mốc đi muộn, người được ghi nhận có trạng thái
+  Có mặt. Nếu đã bật, trạng thái được tính theo giờ quét so với mốc đã chọn.
+  Phần so sánh đi muộn có độ chính xác theo phút; phút điểm danh phải sau
+  phút ngưỡng thì mới được ghi là LATE.
+- Giảng viên có thể tìm sinh viên để điểm danh thủ công; nguồn ghi nhận
+  được lưu riêng với nguồn quét mã vạch.
+- Khi kết thúc, các record còn PENDING được đổi thành ABSENT, sau đó buổi
+  chuyển CLOSED. Màn hình xác nhận hiển thị số người chưa điểm danh trước
+  khi thực hiện.
+- Sau khi buổi đóng, người có quyền có thể chỉnh trạng thái và cần nhập lý
+  do. Lịch sử lưu trạng thái mới, thời điểm sửa, nguồn và lý do.
+
+
+7. ẢNH THẺ SINH VIÊN VÀ MÃ VẠCH
+======================================================================
+
+Tạo ảnh thẻ
+-----------
+
+StudentCardView là View tự vẽ, không dùng mẫu ảnh máy chủ hay thư viện tạo
+thẻ. View giữ một hệ tọa độ 1600 x 1050 và scale theo kích thước màn hình.
+Khi xuất, cùng hàm vẽ tạo Bitmap 1600 x 1050, sau đó nén thành PNG.
+
+Thẻ hiện có các phần: dải tiêu đề trường, nhãn “THẺ SINH VIÊN”, ảnh đại diện
+(hoặc chữ cái đầu nếu không có ảnh), họ tên, MSSV, ngày sinh, niên khóa,
+giới tính, lớp, mã vạch và MSSV dạng chữ bên dưới mã.
+
+StudentPhotos đọc ảnh đã lưu nội bộ, giảm kích thước ảnh nguồn tối đa còn
+khoảng 1200 px ở cạnh dài, áp dụng hướng EXIF và lưu JPEG chất lượng 90.
+Ảnh dùng trong màn hình thẻ được đọc lại với kích thước tối đa khoảng 800 px
+ở cạnh dài để giảm bộ nhớ.
+
+StudentCardActivity dùng Android CreateDocument để người dùng chọn nơi lưu
+PNG. Chức năng chia sẻ tạo tệp tạm trong cache và cấp URI đọc qua FileProvider.
+
+Cách tạo và đọc mã vạch
+-----------------------
+
+- ZXing Code128Writer mã hóa chuỗi MSSV theo BarcodeFormat.CODE_128.
+- BitMatrix được chuyển từng ô thành pixel đen/trắng rồi vẽ lên Bitmap thẻ.
+- Đây là mã vạch một chiều CODE_128, không phải QR code.
+- Khi quét, camera giải mã nội dung chuỗi; repository tra cứu chuỗi đó để
+  tìm đúng sinh viên. Không có bước băm MSSV trước khi vẽ hoặc quét.
+- Chức năng “Quét kiểm tra thẻ” mở ScanActivity ở chế độ verify. Chế độ này
+  kiểm tra mã và hiển thị hồ sơ nhưng không điểm danh.
+
+
+8. THỐNG KÊ, BẢNG CHUYÊN CẦN VÀ XUẤT TỆP
+======================================================================
+
+- AttendanceStatsActivity lọc theo lớp và khoảng thời gian. Biểu đồ tổng
+  hợp các buổi đã đóng; phần bảng dùng danh sách buổi không ở trạng thái
+  DRAFT, bao gồm cả buổi đang mở.
+- AttendanceReport.capture tạo một snapshot bất biến dùng chung cho bảng
+  trên màn hình và tệp xuất.
+- Mỗi lớp có một bảng: cột đầu là STT, MSSV, họ tên; các cột tiếp theo là
+  ngày/giờ buổi học theo hàng ngang. “x” là có mặt, “t” là đi trễ; ô trống
+  là không có trạng thái có mặt/trễ (vắng hoặc chưa điểm danh).
+- Nếu sinh viên đã rời danh sách lớp nhưng có record lịch sử, bảng vẫn giữ
+  sinh viên đó với nhãn “đã rời lớp”.
+- Khi nhấn xuất Excel, snapshot của bộ lọc đang hiển thị được tạo trước khi
+  mở bộ chọn tệp. Do đó đổi lớp hoặc khoảng thời gian sẽ làm bảng và tệp
+  xuất tiếp theo thay đổi tương ứng.
+- AttendanceExcel tự tạo workbook XLSX bằng XML và ZipOutputStream, không
+  dùng Apache POI. MSSV được ghi dưới dạng chuỗi để giữ nguyên số 0 đầu nếu
+  có. Mỗi lớp xuất thành một sheet.
+- CsvTransfer.csv cũng hỗ trợ xuất CSV chi tiết cho một buổi điểm danh.
+
+
+9. MENU, NAVIGATION, INTENT VÀ SỰ KIỆN
+======================================================================
+
+- MainActivity là cửa vào giao diện chính. DataActivity kiểm tra đăng nhập;
+  nếu chưa có phiên hợp lệ thì điều hướng về LoginActivity.
+- BottomNavigationView thay menu theo vai trò. Quản trị viên đi tới các
+  màn hình quản lý; giảng viên thấy trang điểm danh, lớp được giao, thời
+  khóa biểu và trang cá nhân.
+- Toolbar/Menu có các thao tác theo màn hình như lọc ngày, sửa buổi chưa
+  mở, thao tác lớp hoặc mở cài đặt.
+- Các màn hình độc lập được mở bằng Intent tường minh, ví dụ MainActivity
+  mở ClassDetailActivity, SessionFormActivity, ScanActivity hoặc
+  AttendanceStatsActivity.
+- Dữ liệu nhận giữa Activity được đặt bằng Intent extras như classId,
+  studentId, sessionId và mode. Màn quét phân biệt MODE_ATTENDANCE với
+  MODE_VERIFY_CARD để không nhầm tra cứu thẻ với điểm danh.
+- Sự kiện nút và hàng danh sách được xử lý bằng setOnClickListener hoặc
+  callback của adapter. Activity Result API nhận kết quả chọn CSV/ảnh và
+  vị trí lưu PNG/XLSX.
+- Việc lưu dữ liệu, nhập CSV, đọc ảnh, đọc camera và tạo tệp chạy ngoài
+  luồng UI; màn hình nhận kết quả để cập nhật trạng thái, thông báo hoặc
+  mở màn hình tiếp theo.
+
+
+10. CÁC FILE MÃ NGUỒN NÊN ĐỌC KHI CẦN TRA CỨU
+======================================================================
+
+- app/build.gradle.kts, gradle/libs.versions.toml: dependency và cấu hình.
+- app/src/main/java/com/example/th9/AttendanceApp.java: khởi tạo app.
+- app/src/main/java/com/example/th9/ui/DataActivity.java: khởi tạo dữ liệu
+  và bảo vệ màn hình theo đăng nhập/vai trò.
+- app/src/main/java/com/example/th9/data/AttendanceDatabase.java: entity,
+  DAO, chỉ mục và migration Room.
+- app/src/main/java/com/example/th9/data/AttendanceRepository.java: giao
+  dịch, quyền, nghiệp vụ sinh viên, buổi điểm danh và CSV.
+- app/src/main/java/com/example/th9/data/AuthStore.java và
+  PasswordHasher.java: đăng nhập, phiên cục bộ và băm mật khẩu.
+- app/src/main/java/com/example/th9/ui/StudentFormActivity.java,
+  StudentSaveViewModel.java, ProfileRules.java: form và lưu hồ sơ.
+- app/src/main/java/com/example/th9/data/CsvTransfer.java và
+  app/src/main/java/com/example/th9/ui/CsvImportPreviewActivity.java:
+  nhập/xem trước CSV.
+- app/src/main/java/com/example/th9/data/CardCodes.java,
+  StudentPhotos.java, app/src/main/java/com/example/th9/view/StudentCardView.java
+  và ui/StudentCardActivity.java: mã thẻ, ảnh hồ sơ, vẽ/lưu/chia sẻ thẻ.
+- app/src/main/java/com/example/th9/camera/CameraScanner.java,
+  BarcodeFallback.java và ui/ScanActivity.java: CameraX, ML Kit, ZXing và
+  xử lý điểm danh/kiểm tra thẻ.
+- app/src/main/java/com/example/th9/data/ScheduleRules.java,
+  ui/HomeScheduleSuggestions.java, ScheduleFormActivity.java,
+  SessionFormActivity.java: lịch lặp và tạo buổi từ gợi ý.
+- app/src/main/java/com/example/th9/data/AttendanceReport.java,
+  AttendanceExcel.java, ui/AttendanceStatsActivity.java: bảng và xuất XLSX.
+- app/src/main/java/com/example/th9/ui/VietnameseSpeaker.java và
+  SessionResultActivity.java: đọc thông báo và kết quả bằng TTS.
+- app/src/main/java/com/example/th9/MainActivity.java cùng
+  app/src/main/res/menu/: menu, tab và các điểm điều hướng chính.
+
+======================================================================
+HẾT

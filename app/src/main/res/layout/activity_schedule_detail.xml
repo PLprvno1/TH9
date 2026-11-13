@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android" xmlns:app="http://schemas.android.com/apk/res-auto" android:layout_width="match_parent" android:layout_height="match_parent" android:orientation="vertical" android:background="@color/background">
+    <com.google.android.material.appbar.MaterialToolbar android:id="@+id/toolbar_schedule_detail" android:layout_width="match_parent" android:layout_height="?attr/actionBarSize" app:title="@string/schedule_detail" app:navigationIcon="@drawable/ic_arrow_back" />
+    <androidx.core.widget.NestedScrollView android:layout_width="match_parent" android:layout_height="match_parent">
+        <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical" android:padding="20dp">
+            <TextView android:id="@+id/schedule_detail_title" android:layout_width="match_parent" android:layout_height="wrap_content" android:textSize="24sp" android:textStyle="bold" android:textColor="@color/text_primary" />
+            <TextView android:id="@+id/schedule_detail_info" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginVertical="16dp" android:textSize="16sp" android:lineSpacingExtra="6dp" android:textColor="@color/text_secondary" />
+            <com.google.android.material.button.MaterialButton android:id="@+id/schedule_attend" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="@string/schedule_start_attendance" />
+            <com.google.android.material.button.MaterialButton android:id="@+id/schedule_roster" style="?attr/materialButtonOutlinedStyle" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="@string/schedule_roster" />
+            <com.google.android.material.button.MaterialButton android:id="@+id/schedule_edit" style="?attr/materialButtonOutlinedStyle" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="@string/schedule_edit" />
+            <com.google.android.material.button.MaterialButton android:id="@+id/schedule_archive" style="@style/Widget.MaterialComponents.Button.TextButton" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="@string/schedule_archive" />
+        </LinearLayout>
+    </androidx.core.widget.NestedScrollView>
+</LinearLayout>

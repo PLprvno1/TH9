@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="speech_scan_success">Quét thành công. %1$s.</string>
+    <string name="speech_read_result">Đọc kết quả</string>
+    <string name="speech_result_summary">Kết quả điểm danh. Có mặt: %1$d sinh viên. Vắng: %2$d sinh viên. Đi trễ: %3$d sinh viên. Tỷ lệ chuyên cần: %4$d phần trăm.</string>
+    <string name="speech_unavailable">Chưa thể phát giọng đọc. Hãy kiểm tra cài đặt chuyển văn bản thành giọng nói trên thiết bị.</string>
+    <string name="speech_vietnamese_unavailable">Thiết bị chưa có giọng đọc tiếng Việt. Hãy bổ sung giọng tiếng Việt trong cài đặt chuyển văn bản thành giọng nói.</string>
+</resources>

@@ -1,0 +1,10 @@
+PASS android_metadata: all 1 original rows and original columns unchanged
+PASS Classroom: all 1 original rows and original columns unchanged
+PASS Student: all 9 original rows and original columns unchanged
+PASS ClassMembership: all 1 original rows and original columns unchanged
+PASS AttendanceSession: all 1 original rows and original columns unchanged
+PASS AttendanceRecord: all 1 original rows and original columns unchanged
+PASS StudentNumberSequence: all 1 original rows and original columns unchanged
+PASS schema version 4; foreign_key_check empty; integrity_check ok
+PASS production accounts, assignments and login empty: first Admin setup remains available
+PASS all 10 original settings and student photo files byte-for-byte unchanged

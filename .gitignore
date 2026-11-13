@@ -13,3 +13,17 @@
 .externalNativeBuild
 .cxx
 local.properties
+
+# Local emulator data backups (may contain personal records)
+/verification/pre-student-card-data.tar
+/verification/student-card-before/
+/verification/student-card-after/
+
+/verification/roles-before/
+/verification/roles-after/
+
+/verification/full-frame-before/
+/verification/full-frame-after/
+
+/verification/schedule-before/
+/verification/schedule-after/

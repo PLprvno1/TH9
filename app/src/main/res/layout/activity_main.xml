@@ -19,7 +19,6 @@
             android:id="@+id/toolbar_main"
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
-            app:menu="@menu/menu_main"
             app:title="@string/app_name"
             app:titleTextAppearance="@style/TextAppearance.Material3.TitleMedium"
             app:titleTextColor="@color/text_primary" />
@@ -79,6 +78,7 @@
                 </LinearLayout>
 
                 <!-- SECTION: ACTIVE SESSION (Đang mở) -->
+                <include layout="@layout/view_home_suggestions" />
                 <com.google.android.material.card.MaterialCardView
                     android:id="@+id/card_active_session"
                     android:layout_width="match_parent"
@@ -288,23 +288,6 @@
                     </LinearLayout>
                 </com.google.android.material.card.MaterialCardView>
 
-                <!-- Action Button: Tạo buổi điểm danh -->
-                <com.google.android.material.button.MaterialButton
-                    android:id="@+id/btn_home_create_session"
-                    style="@style/Widget.Material3.Button.TonalButton"
-                    android:layout_width="match_parent"
-                    android:layout_height="@dimen/min_touch_target"
-                    android:layout_marginStart="@dimen/spacing_lg"
-                    android:layout_marginTop="@dimen/spacing_xs"
-                    android:layout_marginEnd="@dimen/spacing_lg"
-                    android:layout_marginBottom="@dimen/spacing_lg"
-                    android:text="@string/home_btn_create_session"
-                    android:textColor="@color/primary"
-                    android:textStyle="bold"
-                    app:cornerRadius="@dimen/corner_md"
-                    app:icon="@drawable/ic_add"
-                    app:iconTint="@color/primary" />
-
                 <!-- RECENT SESSIONS SECTION -->
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -350,7 +333,14 @@
             </LinearLayout>
         </androidx.core.widget.NestedScrollView>
 
-        <!-- 2. TAB: DANH SÁCH LỚP (Classes View) -->
+        <include
+            android:id="@+id/view_management"
+            layout="@layout/view_management"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:visibility="gone" />
+
+        <!-- Class management opened from the Management tab -->
         <LinearLayout
             android:id="@+id/view_classes"
             android:layout_width="match_parent"
@@ -430,6 +420,7 @@
                     app:tint="@color/text_tertiary" />
 
                 <TextView
+                    android:id="@+id/classes_empty_title"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="@dimen/spacing_md"
@@ -443,6 +434,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="@dimen/spacing_xs"
                     android:gravity="center"
+                    android:id="@+id/classes_empty_description"
                     android:text="@string/classes_empty_desc"
                     android:textColor="@color/text_secondary"
                     android:textSize="@dimen/text_body" />
@@ -619,6 +611,7 @@
                 tools:listitem="@layout/item_session" />
         </LinearLayout>
 
+        <include layout="@layout/view_personal" />
     </FrameLayout>
 
     <!-- Bottom Navigation Bar -->
@@ -631,6 +624,7 @@
         app:elevation="8dp"
         app:itemIconTint="@color/primary"
         app:itemTextColor="@color/primary"
+        app:labelVisibilityMode="labeled"
         app:menu="@menu/bottom_nav_menu" />
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

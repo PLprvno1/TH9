@@ -169,7 +169,7 @@
                 android:id="@+id/tv_csv_summary"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Tổng số: 6 dòng • 4 hợp lệ, 2 dòng lỗi"
+                android:text="Chọn tệp CSV để xem danh sách sinh viên."
                 android:textColor="@color/text_primary"
                 android:textSize="@dimen/text_body"
                 android:textStyle="bold" />
@@ -179,7 +179,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="@dimen/min_touch_target"
                 android:layout_marginTop="@dimen/spacing_sm"
-                android:text="Xác nhận nhập 4 sinh viên hợp lệ"
+                android:text="Thêm sinh viên"
                 android:textColor="@color/white"
                 android:textStyle="bold"
                 app:cornerRadius="@dimen/corner_md" />

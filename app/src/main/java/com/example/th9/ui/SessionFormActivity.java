@@ -16,8 +16,10 @@ import androidx.appcompat.widget.Toolbar;
 
 import com.example.th9.R;
 import com.example.th9.data.AttendanceRepository;
+import com.example.th9.data.ScheduleRules;
 import com.example.th9.model.AttendanceSession;
 import com.example.th9.model.ClassRoom;
+import com.example.th9.model.ClassSchedule;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.materialswitch.MaterialSwitch;
@@ -34,8 +36,12 @@ public class SessionFormActivity extends com.example.th9.ui.DataActivity {
 
     public static final String EXTRA_PRESELECTED_CLASS_ID = "extra_preselected_class_id";
     public static final String EXTRA_SESSION_ID = "edit_session_id";
+    public static final String EXTRA_SCHEDULE_ID = "session_schedule_id";
+    public static final String EXTRA_SCHEDULE_DATE = "session_schedule_date";
     private String editSessionId;
     private String creationId;
+    private String scheduledScheduleId,scheduledDate;
+    private ClassSchedule scheduledRule;
 
     private String preselectedClassId;
     private String selectedClassId;
@@ -57,7 +63,19 @@ public class SessionFormActivity extends com.example.th9.ui.DataActivity {
 
         setContentView(R.layout.activity_session_form);
 
-        preselectedClassId = getIntent().getStringExtra(EXTRA_PRESELECTED_CLASS_ID);
+        AttendanceRepository repo=AttendanceRepository.getInstance();
+        editSessionId=getIntent().getStringExtra(EXTRA_SESSION_ID);
+        AttendanceSession existing=editSessionId==null?null:repo.getSessionById(editSessionId);
+        if(editSessionId!=null&&(existing==null||!repo.canControlSession(editSessionId)||existing.getStatus()!=AttendanceSession.SessionStatus.DRAFT)){finish();return;}
+        scheduledScheduleId=getIntent().getStringExtra(EXTRA_SCHEDULE_ID);
+        scheduledDate=getIntent().getStringExtra(EXTRA_SCHEDULE_DATE);
+        if(existing!=null&&existing.getScheduleId()!=null){scheduledScheduleId=existing.getScheduleId();scheduledDate=existing.getPlannedDate();}
+        scheduledRule=scheduledScheduleId==null?null:repo.getSchedule(scheduledScheduleId);
+        if(scheduledScheduleId!=null&&(scheduledRule==null||scheduledDate==null||!ScheduleRules.occurs(scheduledRule,ScheduleRules.day(scheduledDate)))){
+            Toast.makeText(this,"Lịch học không còn khả dụng.",Toast.LENGTH_LONG).show();finish();return;
+        }
+        preselectedClassId=scheduledRule==null?getIntent().getStringExtra(EXTRA_PRESELECTED_CLASS_ID):scheduledRule.classId;
+        if(scheduledRule!=null)calendar.setTimeInMillis(AttendanceRepository.parseDateTime(ScheduleRules.display(scheduledDate),ScheduleRules.time(scheduledRule.startMinute)));
         creationId=savedInstanceState==null?AttendanceRepository.id():savedInstanceState.getString("creation_id",AttendanceRepository.id());
 
         initViews();
@@ -66,24 +84,38 @@ public class SessionFormActivity extends com.example.th9.ui.DataActivity {
         setupDateTimePickers();
         setupLateToggle();
         setupListeners();
-        editSessionId=getIntent().getStringExtra(EXTRA_SESSION_ID);
-        if(editSessionId!=null){
-            AttendanceSession s=AttendanceRepository.getInstance().getSessionById(editSessionId);
-            if(s==null||s.getStatus()!=AttendanceSession.SessionStatus.DRAFT){finish();return;}
-            selectedClassId=s.getClassId();
-            calendar.setTimeInMillis(s.getScheduledAt());
-            updateExpectedCount(AttendanceRepository.getInstance().getClassById(selectedClassId));
-            for(int i=0;i<classesList.size();i++)if(classesList.get(i).getId().equals(selectedClassId))
-                actvClass.setText(classesList.get(i).getName()+" ("+classesList.get(i).getCode()+")",false);
-            etTitle.setText(s.getTitle());etDate.setText(s.getDate());etTime.setText(s.getStartTime());
-            switchLate.setChecked(s.isEnableLateThreshold());etLateTime.setText(s.getLateThresholdTime());btnSubmit.setText("Lưu thay đổi");
-        }
-        if(savedInstanceState!=null){selectedClassId=savedInstanceState.getString("selectedClassId",selectedClassId);updateExpectedCount(AttendanceRepository.getInstance().getClassById(selectedClassId));}
+        if(scheduledRule!=null)applyScheduledDefaults(existing);
+        else if(existing!=null)applyExistingSession(existing);
+        if(savedInstanceState!=null&&scheduledRule==null){selectedClassId=savedInstanceState.getString("selectedClassId",selectedClassId);updateExpectedCount(repo.getClassById(selectedClassId));}
         if(classesList.isEmpty()){
-            btnSubmit.setEnabled(false);tvExpectedCount.setText("Chưa có lớp. Hãy tạo lớp trước.");
-            btnPreview.setVisibility(View.VISIBLE);btnPreview.setText("Tạo lớp");
+            btnSubmit.setEnabled(false);tvExpectedCount.setText(AttendanceRepository.getInstance().isAdmin()?"Chưa có lớp. Hãy tạo lớp trước.":"Chưa được phân công lớp. Liên hệ quản trị viên.");
+            btnPreview.setVisibility(AttendanceRepository.getInstance().isAdmin()?View.VISIBLE:View.GONE);btnPreview.setText("Tạo lớp");
             btnPreview.setOnClickListener(v->{startActivity(new Intent(this,ClassFormActivity.class));finish();});
         }
+    }
+
+    private void applyScheduledDefaults(AttendanceSession existing){
+        ClassRoom classroom=AttendanceRepository.getInstance().getClassById(scheduledRule.classId);
+        selectedClassId=scheduledRule.classId;updateExpectedCount(classroom);
+        if(classroom!=null)actvClass.setText(classroom.getName()+" ("+classroom.getCode()+")",false);
+        actvClass.setEnabled(false);etDate.setEnabled(false);etDate.setText(ScheduleRules.display(scheduledDate));
+        if(existing!=null){
+            etTitle.setText(existing.getTitle());etTime.setText(existing.getStartTime());
+            switchLate.setChecked(existing.isEnableLateThreshold());etLateTime.setText(existing.getLateThresholdTime());
+        }else{
+            etTitle.setText("Điểm danh • "+ScheduleRules.shift(scheduledRule)+" • "+ScheduleRules.display(scheduledDate));
+            etTime.setText(ScheduleRules.time(scheduledRule.startMinute));switchLate.setChecked(false);etLateTime.setText("");
+        }
+        btnSubmit.setText("Tạo và bắt đầu điểm danh");
+    }
+
+    private void applyExistingSession(AttendanceSession session){
+        selectedClassId=session.getClassId();calendar.setTimeInMillis(session.getScheduledAt());
+        updateExpectedCount(AttendanceRepository.getInstance().getClassById(selectedClassId));
+        for(int i=0;i<classesList.size();i++)if(classesList.get(i).getId().equals(selectedClassId))
+            actvClass.setText(classesList.get(i).getName()+" ("+classesList.get(i).getCode()+")",false);
+        etTitle.setText(session.getTitle());etDate.setText(session.getDate());etTime.setText(session.getStartTime());
+        switchLate.setChecked(session.isEnableLateThreshold());etLateTime.setText(session.getLateThresholdTime());btnSubmit.setText("Lưu thay đổi");
     }
 
     private void initViews() {
@@ -161,11 +193,13 @@ public class SessionFormActivity extends com.example.th9.ui.DataActivity {
         SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy", Locale.getDefault());
         etDate.setText(dateFormat.format(calendar.getTime()));
         etTime.setText(new SimpleDateFormat("HH:mm",Locale.getDefault()).format(calendar.getTime()));
-        Calendar lateDefault=(Calendar)calendar.clone();lateDefault.add(Calendar.MINUTE,15);
-        if(lateDefault.get(Calendar.DAY_OF_YEAR)!=calendar.get(Calendar.DAY_OF_YEAR)){
-            lateDefault=(Calendar)calendar.clone();lateDefault.set(Calendar.HOUR_OF_DAY,23);lateDefault.set(Calendar.MINUTE,59);
-        }
-        etLateTime.setText(new SimpleDateFormat("HH:mm",Locale.getDefault()).format(lateDefault.getTime()));
+        if(scheduledRule==null){
+            Calendar lateDefault=(Calendar)calendar.clone();lateDefault.add(Calendar.MINUTE,15);
+            if(lateDefault.get(Calendar.DAY_OF_YEAR)!=calendar.get(Calendar.DAY_OF_YEAR)){
+                lateDefault=(Calendar)calendar.clone();lateDefault.set(Calendar.HOUR_OF_DAY,23);lateDefault.set(Calendar.MINUTE,59);
+            }
+            etLateTime.setText(new SimpleDateFormat("HH:mm",Locale.getDefault()).format(lateDefault.getTime()));
+        }else etLateTime.setText("");
 
         etDate.setOnClickListener(v -> {
             new DatePickerDialog(this, (view, year, month, dayOfMonth) -> {
@@ -198,6 +232,7 @@ public class SessionFormActivity extends com.example.th9.ui.DataActivity {
     private void setupLateToggle() {
         switchLate.setOnCheckedChangeListener((buttonView, isChecked) -> {
             llLateContainer.setVisibility(isChecked ? View.VISIBLE : View.GONE);
+            if(isChecked)tilLateTime.setError(null);
         });
     }
 
@@ -230,12 +265,25 @@ public class SessionFormActivity extends com.example.th9.ui.DataActivity {
             tilTitle.setError(null);
         }
 
+        try{
+            long scheduledAt=AttendanceRepository.parseDateTime(date,time);tilDate.setError(null);tilTime.setError(null);
+            if(enableLate){
+                if(lateTime.isEmpty()){tilLateTime.setError("Chọn mốc giờ tính đi muộn");hasError=true;}
+                else if(AttendanceRepository.parseDateTime(date,lateTime)<scheduledAt){tilLateTime.setError("Mốc đi muộn phải từ giờ bắt đầu trở đi");hasError=true;}
+                else tilLateTime.setError(null);
+            }else tilLateTime.setError(null);
+        }catch(IllegalArgumentException e){tilTime.setError("Ngày hoặc giờ không hợp lệ");hasError=true;}
+
         if (hasError) return;
 
         ClassRoom cr = AttendanceRepository.getInstance().getClassById(selectedClassId);
         int expected = cr != null ? cr.getStudentCount() : 0;
 
-        createAndOpen(title,date,time,enableLate,lateTime,expected,AttendanceSession.SessionStatus.DRAFT);
+        if(editSessionId!=null||scheduledScheduleId!=null){createAndOpen(title,date,time,enableLate,lateTime,expected,AttendanceSession.SessionStatus.DRAFT);return;}
+        new MaterialAlertDialogBuilder(this).setTitle("Tạo buổi ngoài lịch?")
+            .setMessage("Buổi này dùng cho các buổi học bù hoặc phát sinh ngoài thời khóa biểu. Nếu buổi học đã có trong lịch, hãy mở từ Thời khóa biểu để tránh tạo trùng.")
+            .setPositiveButton("Tạo ngoài lịch",(d,w)->createAndOpen(title,date,time,enableLate,lateTime,expected,AttendanceSession.SessionStatus.DRAFT))
+            .setNegativeButton("Hủy",null).show();
     }
 
     private void createAndOpen(String title, String date, String time, boolean enableLate, String lateTime, int expected, AttendanceSession.SessionStatus status) {
@@ -244,6 +292,13 @@ public class SessionFormActivity extends com.example.th9.ui.DataActivity {
                 status, null, expected
         );
         session.setId(editSessionId==null?creationId:editSessionId);
+        if(scheduledScheduleId!=null){
+            com.example.th9.data.Tasks.run(this,btnSubmit,()->AttendanceRepository.getInstance().startScheduledSession(scheduledScheduleId,scheduledDate,session),id->{
+                Toast.makeText(this,"Buổi điểm danh đã được mở",Toast.LENGTH_SHORT).show();
+                Intent intent=new Intent(this,SessionDetailActivity.class);intent.putExtra(SessionDetailActivity.EXTRA_SESSION_ID,id);startActivity(intent);finish();
+            });
+            return;
+        }
         com.example.th9.data.Tasks.run(this,btnSubmit,()->{
             if(editSessionId==null)AttendanceRepository.getInstance().addSession(session);
             else AttendanceRepository.getInstance().updateSession(session);

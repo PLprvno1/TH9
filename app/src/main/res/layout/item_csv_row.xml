@@ -42,6 +42,14 @@
             tools:text="Nguyễn Văn An" />
 
         <TextView
+            android:id="@+id/tv_csv_details"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="@color/text_secondary"
+            android:textSize="11sp"
+            tools:text="Ngày sinh: 01/01/2004 · Niên khóa: 2022–2026 · Nam" />
+
+        <TextView
             android:id="@+id/tv_csv_error_reason"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"

@@ -113,7 +113,7 @@
                             android:textColor="@color/text_primary"
                             android:textSize="@dimen/text_body_sm"
                             android:textStyle="bold"
-                            tools:text="Sĩ số: 8 SV" />
+                            tools:text="Sĩ số: 8 sinh viên" />
                     </LinearLayout>
 
                     <TextView
@@ -123,7 +123,7 @@
                         android:layout_marginTop="@dimen/spacing_xs"
                         android:textColor="@color/status_late"
                         android:textSize="@dimen/text_caption"
-                        tools:text="Quy tắc: Quét sau 08:15 tính đi muộn" />
+                        tools:text="Mốc đi muộn do giảng viên chọn: sau 08:15" />
 
                     <TextView
                         android:id="@+id/tv_detail_finished_time"
@@ -188,7 +188,7 @@
                                 android:layout_height="wrap_content"
                                 android:layout_marginTop="@dimen/spacing_xs"
                                 android:gravity="center"
-                                android:text="Nhấn Mở buổi để kích hoạt camera quét mã thẻ và ghi nhận điểm danh."
+                                android:text="Nhấn “Mở buổi điểm danh” để bắt đầu quét thẻ."
                                 android:textColor="@color/text_secondary"
                                 android:textSize="@dimen/text_body_sm" />
 
@@ -306,7 +306,7 @@
                                     android:textColor="@color/text_secondary"
                                     android:textSize="@dimen/text_caption"
                                     android:textStyle="bold"
-                                    tools:text="3 Chưa điểm" />
+                                    tools:text="3 Chưa điểm danh" />
                             </LinearLayout>
 
                         </LinearLayout>
@@ -350,7 +350,7 @@
 
                 </LinearLayout>
 
-                <!-- 3. STATE: ĐÃ KẾT THÚC (FINISHED) -->
+                <!-- Trạng thái: đã kết thúc -->
                 <LinearLayout
                     android:id="@+id/layout_state_finished"
                     android:layout_width="match_parent"

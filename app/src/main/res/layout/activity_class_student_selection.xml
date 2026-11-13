@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android" xmlns:app="http://schemas.android.com/apk/res-auto" android:layout_width="match_parent" android:layout_height="match_parent" android:orientation="vertical" android:background="@color/background">
+    <com.google.android.material.appbar.MaterialToolbar android:id="@+id/toolbar_class_student_selection" android:layout_width="match_parent" android:layout_height="?attr/actionBarSize" app:title="@string/class_select_students_title" app:navigationIcon="@drawable/ic_arrow_back" />
+    <TextView android:id="@+id/class_student_selection_class" android:layout_width="match_parent" android:layout_height="wrap_content" android:paddingHorizontal="16dp" android:textColor="@color/text_primary" android:textStyle="bold" android:textSize="18sp" />
+    <TextView android:layout_width="match_parent" android:layout_height="wrap_content" android:paddingHorizontal="16dp" android:paddingTop="8dp" android:text="@string/class_select_students_hint" android:textColor="@color/text_secondary" />
+    <com.google.android.material.textfield.TextInputLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_margin="16dp" android:hint="@string/class_select_students_search">
+        <com.google.android.material.textfield.TextInputEditText android:id="@+id/class_student_selection_search" android:layout_width="match_parent" android:layout_height="wrap_content" android:inputType="text" android:singleLine="true" />
+    </com.google.android.material.textfield.TextInputLayout>
+    <TextView android:id="@+id/class_student_selection_count" android:layout_width="match_parent" android:layout_height="wrap_content" android:paddingHorizontal="16dp" android:textColor="@color/text_secondary" android:accessibilityLiveRegion="polite" />
+    <TextView android:id="@+id/class_student_selection_empty" android:layout_width="match_parent" android:layout_height="wrap_content" android:padding="24dp" android:textColor="@color/text_secondary" android:visibility="gone" />
+    <ListView android:id="@+id/class_student_selection_list" android:layout_width="match_parent" android:layout_height="0dp" android:layout_weight="1" android:choiceMode="multipleChoice" android:paddingHorizontal="8dp" android:divider="@null" />
+    <TextView android:id="@+id/class_student_selection_error" android:layout_width="match_parent" android:layout_height="wrap_content" android:paddingHorizontal="16dp" android:textColor="@color/status_absent" android:accessibilityLiveRegion="polite" />
+    <com.google.android.material.button.MaterialButton android:id="@+id/class_student_selection_save" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_margin="16dp" android:text="@string/class_select_students_title" />
+</LinearLayout>

@@ -86,13 +86,12 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="@dimen/spacing_md"
                     android:gravity="center_vertical"
-                    android:orientation="horizontal">
+                    android:orientation="vertical">
 
                     <TextView
                         android:id="@+id/tv_detail_student_count"
-                        android:layout_width="0dp"
+                        android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_weight="1"
                         android:textColor="@color/text_primary"
                         android:textSize="@dimen/text_body"
                         android:textStyle="bold"
@@ -100,8 +99,9 @@
 
                     <com.google.android.material.button.MaterialButton
                         android:id="@+id/btn_detail_create_session"
-                        android:layout_width="wrap_content"
+                        android:layout_width="match_parent"
                         android:layout_height="@dimen/min_touch_target"
+                        android:layout_marginTop="8dp"
                         android:text="@string/class_detail_btn_new_session"
                         android:textColor="@color/white"
                         app:cornerRadius="@dimen/corner_md"
@@ -109,7 +109,30 @@
                         app:iconTint="@color/white" />
 
                     <com.google.android.material.button.MaterialButton
+                        android:id="@+id/btn_detail_assign_teachers"
+                        style="@style/Widget.Material3.Button.OutlinedButton"
+                        android:layout_width="match_parent"
+                        android:layout_height="@dimen/min_touch_target"
+                        android:layout_marginTop="8dp"
+                        android:text="@string/class_assign_teachers"
+                        android:visibility="gone"
+                        app:cornerRadius="@dimen/corner_md"
+                        app:icon="@drawable/ic_person" />
+
+                    <TextView
+                        android:id="@+id/tv_detail_assigned_teachers"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="8dp"
+                        android:textColor="@color/text_secondary"
+                        android:textSize="14sp"
+                        android:lineSpacingExtra="4dp"
+                        android:accessibilityLiveRegion="polite"
+                        android:visibility="gone" />
+
+                    <com.google.android.material.button.MaterialButton
                         android:id="@+id/btn_detail_add_student"
+                        android:visibility="gone"
                         style="@style/Widget.Material3.Button.TonalButton"
                         android:layout_width="wrap_content"
                         android:layout_height="@dimen/min_touch_target"
@@ -174,7 +197,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/spacing_xs"
                 android:gravity="center"
-                android:text="@string/class_detail_empty_students_desc"
+                android:text="@string/class_select_students_hint"
                 android:textColor="@color/text_secondary"
                 android:textSize="@dimen/text_body" />
 
@@ -196,6 +219,7 @@
 
                 <com.google.android.material.button.MaterialButton
                     android:id="@+id/btn_empty_import_csv"
+                    android:visibility="gone"
                     style="@style/Widget.Material3.Button.OutlinedButton"
                     android:layout_width="wrap_content"
                     android:layout_height="@dimen/min_touch_target"

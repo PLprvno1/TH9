@@ -21,13 +21,15 @@ public class CsvPreviewAdapter extends RecyclerView.Adapter<CsvPreviewAdapter.Cs
         public int stt;
         public String mssv;
         public String name;
+        public String details;
         public boolean isValid;
         public String errorMessage;
 
-        public CsvRowItem(int stt, String mssv, String name, boolean isValid, String errorMessage) {
+        public CsvRowItem(int stt, String mssv, String name, String details, boolean isValid, String errorMessage) {
             this.stt = stt;
             this.mssv = mssv;
             this.name = name;
+            this.details = details;
             this.isValid = isValid;
             this.errorMessage = errorMessage;
         }
@@ -61,9 +63,10 @@ public class CsvPreviewAdapter extends RecyclerView.Adapter<CsvPreviewAdapter.Cs
         holder.tvStt.setText(String.valueOf(item.stt));
         holder.tvMssv.setText(item.mssv != null && !item.mssv.isEmpty() ? item.mssv : "—");
         holder.tvName.setText(item.name);
+        holder.tvDetails.setText(item.details);
 
         if (item.isValid) {
-            holder.tvBadge.setText(item.errorMessage);
+            holder.tvBadge.setText("Hợp lệ");
             holder.tvBadge.setBackgroundResource(R.drawable.bg_badge_present);
             holder.tvBadge.setTextColor(ContextCompat.getColor(context, R.color.on_status_present_container));
             holder.tvError.setVisibility(View.GONE);
@@ -82,13 +85,14 @@ public class CsvPreviewAdapter extends RecyclerView.Adapter<CsvPreviewAdapter.Cs
     }
 
     static class CsvViewHolder extends RecyclerView.ViewHolder {
-        TextView tvStt, tvMssv, tvName, tvError, tvBadge;
+        TextView tvStt, tvMssv, tvName, tvDetails, tvError, tvBadge;
 
         public CsvViewHolder(@NonNull View itemView) {
             super(itemView);
             tvStt = itemView.findViewById(R.id.tv_csv_stt);
             tvMssv = itemView.findViewById(R.id.tv_csv_mssv);
             tvName = itemView.findViewById(R.id.tv_csv_name);
+            tvDetails = itemView.findViewById(R.id.tv_csv_details);
             tvError = itemView.findViewById(R.id.tv_csv_error_reason);
             tvBadge = itemView.findViewById(R.id.tv_csv_status_badge);
         }

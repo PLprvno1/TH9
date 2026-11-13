@@ -5,6 +5,11 @@
     <uses-permission android:name="android.permission.CAMERA" />
     <uses-permission android:name="android.permission.VIBRATE" />
     <uses-feature android:name="android.hardware.camera.any" android:required="false" />
+    <queries>
+        <intent>
+            <action android:name="android.intent.action.TTS_SERVICE" />
+        </intent>
+    </queries>
     <application
         android:name=".AttendanceApp"
         android:allowBackup="true"
@@ -16,6 +21,11 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.TH9">
 
+        <activity android:name=".ui.LoginActivity" android:exported="false" android:windowSoftInputMode="adjustResize" />
+        <activity android:name=".ui.TeacherAccountsActivity" android:exported="false" />
+        <activity android:name=".ui.TimetableActivity" android:exported="false" />
+        <activity android:name=".ui.ScheduleFormActivity" android:exported="false" />
+        <activity android:name=".ui.ScheduleDetailActivity" android:exported="false" />
         <!-- Main Launcher Activity -->
         <activity
             android:name=".MainActivity"
@@ -37,6 +47,9 @@
             android:exported="false"
             android:windowSoftInputMode="adjustResize" />
 
+        <activity android:name=".ui.StudentCardActivity" android:exported="false" />
+        <activity android:name=".ui.StudentsActivity" android:exported="false" />
+        <activity android:name=".ui.ClassStudentSelectionActivity" android:exported="false" />
         <!-- Student Activities -->
         <activity
             android:name=".ui.StudentFormActivity"

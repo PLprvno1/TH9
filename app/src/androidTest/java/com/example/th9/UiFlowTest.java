@@ -11,6 +11,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import java.util.function.BooleanSupplier;
 import static androidx.test.espresso.Espresso.onView;
+import static androidx.test.espresso.Espresso.onData;
 import static androidx.test.espresso.Espresso.pressBack;
 import static androidx.test.espresso.action.ViewActions.*;
 import static androidx.test.espresso.assertion.ViewAssertions.*;
@@ -24,25 +25,33 @@ import static org.junit.Assert.*;
 public class UiFlowTest {
     private AttendanceRepository repo;
     private String tag;
+    private final java.util.Map<String,Student> createdStudents=new java.util.HashMap<>();
     private void waitFor(BooleanSupplier condition) throws Exception {
         long deadline=System.currentTimeMillis()+12000;
         while(!condition.getAsBoolean()&&System.currentTimeMillis()<deadline)Thread.sleep(50);
         assertTrue("Timed out waiting for persisted operation",condition.getAsBoolean());
         InstrumentationRegistry.getInstrumentation().waitForIdleSync();
     }
-    private void addStudent(String mssv,String name) throws Exception {
+    private void addStudent(String key,String name) throws Exception {
         onView(withId(R.id.btn_detail_add_student)).perform(click());
-        onView(withId(R.id.et_student_name)).perform(replaceText(name));
-        onView(withId(R.id.et_student_mssv)).perform(replaceText(mssv),closeSoftKeyboard());
+        onView(withId(R.id.et_student_name)).perform(replaceText(name),closeSoftKeyboard());
+        onView(withId(R.id.et_student_birth)).perform(scrollTo(),click());onView(withId(android.R.id.button1)).perform(click());
+        onView(withId(R.id.et_student_course)).perform(scrollTo(),replaceText("2020–2026"),closeSoftKeyboard());
+        onView(withId(R.id.sp_student_gender)).perform(scrollTo(),click());onData(is("Nam")).perform(click());
         onView(withId(R.id.btn_student_submit)).perform(scrollTo(),click());
-        waitFor(()->repo.findByMssv(mssv)!=null);
+        waitFor(()->repo.getAllStudents().stream().anyMatch(s->s.getFullName().equals(name)&&s.getCourse()!=null&&s.getCourse().equals("2020–2026")));
+        Student saved=repo.getAllStudents().stream().filter(s->s.getFullName().equals(name)&&"2020–2026".equals(s.getCourse())).max(java.util.Comparator.comparing(Student::getMssv)).get();
+        createdStudents.put(key,saved);onView(withId(R.id.created_student_number)).check(matches(withText(saved.getMssv())));
+        onView(withText("Đóng")).inRoot(isDialog()).perform(click());
     }
     @Test public void createClassStudentsSessionManualCloseResultsHistoryStatsSettings() throws Exception {
         tag=Long.toString(System.currentTimeMillis());
         Context context=InstrumentationRegistry.getInstrumentation().getTargetContext();
         try(ActivityScenario<MainActivity> main=ActivityScenario.launch(MainActivity.class)){
             repo=AttendanceRepository.getInstance();waitFor(()->repo.isInitialized());
-            onView(withId(R.id.nav_classes)).perform(click());onView(withId(R.id.btn_classes_add)).perform(click());
+            onView(withId(R.id.nav_classes)).perform(click());
+            onView(withId(R.id.card_manage_classes)).perform(click());
+            onView(withId(R.id.btn_classes_add)).perform(click());
             onView(withId(R.id.et_class_name)).perform(replaceText("Kiem thu UI "+tag));
             onView(withId(R.id.et_class_code)).perform(replaceText("UI"),closeSoftKeyboard());
             onView(withId(R.id.btn_class_submit)).perform(scrollTo(),click());
@@ -61,7 +70,7 @@ public class UiFlowTest {
             onView(allOf(withText("An UI"),isDescendantOfA(withId(R.id.rv_manual_candidates)))).perform(click());
             onView(withId(R.id.btn_manual_confirm)).perform(click());waitFor(()->repo.getCheckedInTotal(session.getId())==1);
             // Decoded-value path; physical camera is checked separately.
-            repo.scan(session.getId(),"0"+tag+"2",System.currentTimeMillis());
+            repo.scan(session.getId(),createdStudents.get("0"+tag+"2").getMssv(),System.currentTimeMillis());
             onView(withId(R.id.btn_action_finish_session)).perform(click());
             onView(withText("Kết thúc ngay")).inRoot(isDialog()).perform(click());waitFor(()->repo.getSessionById(session.getId()).getStatus()==AttendanceSession.SessionStatus.CLOSED);
             onView(withId(R.id.tv_result_finish_info)).check(matches(withText(containsString("3 SV"))));
@@ -77,9 +86,9 @@ public class UiFlowTest {
             onView(withHint("Lý do chỉnh kết quả (bắt buộc)")).perform(replaceText("Kiem thu ly do"),closeSoftKeyboard());
             onView(withText("Lưu trạng thái")).inRoot(isDialog()).perform(click());
             waitFor(()->repo.getLateCount(session.getId())==1);
-            assertNull(repo.getRecordForStudent(session.getId(),repo.findByMssv("0"+tag+"3").getId()).getCheckedAt());
+            assertNull(repo.getRecordForStudent(session.getId(),createdStudents.get("0"+tag+"3").getId()).getCheckedAt());
             // Return to the acceptance result after testing corrections.
-            AttendanceRecord corrected=repo.getRecordForStudent(session.getId(),repo.findByMssv("0"+tag+"3").getId());
+            AttendanceRecord corrected=repo.getRecordForStudent(session.getId(),createdStudents.get("0"+tag+"3").getId());
             repo.updateRecordStatus(corrected.getId(),AttendanceRecord.AttendanceStatus.ABSENT,"Khoi phuc ket qua kiem thu");
         }
         android.os.Bundle filters=new android.os.Bundle();
@@ -110,7 +119,7 @@ public class UiFlowTest {
         if("true".equals(InstrumentationRegistry.getArguments().getString("leaveOpen"))){
             AttendanceSession recovery=new AttendanceSession(null,classroom.getId(),"Phuc hoi sau khoi dong lai","06/11/2026","07:00",false,"",AttendanceSession.SessionStatus.DRAFT,null,0);
             repo.addSession(recovery);repo.openSession(recovery.getId());
-            repo.manual(recovery.getId(),repo.findByMssv("0"+tag+"1").getId(),System.currentTimeMillis());
+            repo.manual(recovery.getId(),createdStudents.get("0"+tag+"1").getId(),System.currentTimeMillis());
         }
     }
 }

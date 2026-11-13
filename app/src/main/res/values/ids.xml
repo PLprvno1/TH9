@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <item name="nav_history" type="id" />
     <item name="context_view_profile" type="id" />
     <item name="context_edit_student" type="id" />
     <item name="context_link_card" type="id" />

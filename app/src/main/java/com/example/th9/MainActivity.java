@@ -46,13 +46,15 @@ public class MainActivity extends com.example.th9.ui.DataActivity {
     private BottomNavigationView bottomNav;
 
     // View containers for tabs
-    private View viewHome, viewClasses, viewHistory;
+    private View viewHome, viewManagement, viewClasses, viewHistory, viewPersonal;
+    private boolean showingClassManagement;
+    private androidx.activity.OnBackPressedCallback managementBack;
 
     // Home components
     private MaterialCardView cardActiveSession, cardNoActiveSession;
     private TextView tvHomeActiveTitle, tvHomeActiveClass, tvHomeActiveTime, tvHomeProgressLabel, tvHomeBreakdownLabel;
     private LinearProgressIndicator progressHomeActive;
-    private MaterialButton btnHomeContinueScan, btnHomeViewSession, btnHomeCreateSession, btnHomeEmptyCreateSession;
+    private MaterialButton btnHomeContinueScan, btnHomeViewSession, btnHomeEmptyCreateSession;
     private RecyclerView rvHomeRecent;
     private SessionAdapter homeRecentAdapter;
     private TextView tvHomeViewHistory;
@@ -76,6 +78,16 @@ public class MainActivity extends com.example.th9.ui.DataActivity {
     private int currentTabId = R.id.nav_home;
     private com.example.th9.ui.SessionFilters filters;
     private boolean classSortDescending;
+    private com.example.th9.ui.HomeScheduleSuggestions homeSuggestions;
+    private final android.os.Handler homeClock=new android.os.Handler(android.os.Looper.getMainLooper());
+    private final Runnable homeTick=new Runnable(){
+        @Override public void run(){
+            if(AttendanceRepository.getInstance().currentAccount()==null)return;
+            refreshHomeData();scheduleHomeTick();
+        }
+    };
+    private void scheduleHomeTick(){homeClock.removeCallbacks(homeTick);if(homeSuggestions!=null)homeClock.postDelayed(homeTick,60000-System.currentTimeMillis()%60000);}
+    @Override protected void onPause(){homeClock.removeCallbacks(homeTick);super.onPause();}
 
     @Override
     protected void onReady(Bundle savedInstanceState) {
@@ -84,23 +96,28 @@ public class MainActivity extends com.example.th9.ui.DataActivity {
 
         initViews();
         setupToolbar();
+        setupManagementTab();
+        setupPersonalTab();
+        if(!AttendanceRepository.getInstance().isAdmin()){bottomNav.getMenu().clear();bottomNav.inflateMenu(R.menu.bottom_nav_teacher);btnClassesAdd.setVisibility(View.GONE);btnClassesEmptyAdd.setVisibility(View.GONE);((TextView)findViewById(R.id.classes_empty_title)).setText("Chưa có lớp được phân công");((TextView)findViewById(R.id.classes_empty_description)).setText("Liên hệ quản trị viên để được phân công lớp trên thiết bị này.");}
+        com.example.th9.model.Account account=AttendanceRepository.getInstance().currentAccount();toolbar.setSubtitle((account.isAdmin()?"Quản trị viên":"Giảng viên")+" • "+account.fullName);
+        if(AttendanceRepository.getInstance().isAdmin())bottomNav.getMenu().removeItem(R.id.nav_home);
         setupBottomNav();
-        setupHomeTab();
+        if(!AttendanceRepository.getInstance().isAdmin())setupHomeTab();
         setupClassesTab();
         filters=new com.example.th9.ui.SessionFilters(this,this::refreshHistoryData);
         filters.restore(savedInstanceState);
         setupHistoryTab();
 
-        // Check if returning with a specific tab
-        if (getIntent() != null && getIntent().hasExtra(EXTRA_INITIAL_TAB)) {
-            int tab = getIntent().getIntExtra(EXTRA_INITIAL_TAB, R.id.nav_home);
-            bottomNav.setSelectedItemId(tab);
-        } else if (savedInstanceState != null) {
-            currentTabId = savedInstanceState.getInt("current_tab", R.id.nav_home);
-            bottomNav.setSelectedItemId(currentTabId);
-        } else {
-            showTab(R.id.nav_home);
-        }
+        int defaultTab=AttendanceRepository.getInstance().isAdmin()?R.id.nav_classes:R.id.nav_home;
+        int requested=savedInstanceState!=null?savedInstanceState.getInt("current_tab",defaultTab)
+            :getIntent().getIntExtra(EXTRA_INITIAL_TAB,defaultTab);
+        boolean restoreHistory=requested==R.id.nav_history;
+        if(restoreHistory)requested=R.id.nav_personal;
+        if(bottomNav.getMenu().findItem(requested)==null)requested=defaultTab;
+        bottomNav.setSelectedItemId(requested);showTab(requested);
+        if(restoreHistory)openHistory();
+        if(savedInstanceState!=null&&requested==R.id.nav_classes&&savedInstanceState.getBoolean("class_management")&&AttendanceRepository.getInstance().isAdmin())openClassManagement();
+
     }
 
     @Override
@@ -111,12 +128,15 @@ public class MainActivity extends com.example.th9.ui.DataActivity {
         refreshClassesData(etClassesSearch != null ? etClassesSearch.getText().toString() : "");
         refreshHistoryData();
         if(filters!=null)filters.classes(chipGroupHistoryClass);
+        refreshPersonalData();
+        scheduleHomeTick();
     }
 
     @Override
     protected void onSaveInstanceState(@NonNull Bundle outState) {
         super.onSaveInstanceState(outState);
         outState.putInt("current_tab", currentTabId);
+        outState.putBoolean("class_management",showingClassManagement);
         if(filters!=null)filters.save(outState);
     }
 
@@ -125,8 +145,10 @@ public class MainActivity extends com.example.th9.ui.DataActivity {
         bottomNav = findViewById(R.id.bottom_navigation);
 
         viewHome = findViewById(R.id.view_home);
+        viewManagement = findViewById(R.id.view_management);
         viewClasses = findViewById(R.id.view_classes);
         viewHistory = findViewById(R.id.view_history);
+        viewPersonal = findViewById(R.id.view_personal);
 
         // Home
         cardActiveSession = findViewById(R.id.card_active_session);
@@ -139,7 +161,6 @@ public class MainActivity extends com.example.th9.ui.DataActivity {
         progressHomeActive = findViewById(R.id.progress_home_active);
         btnHomeContinueScan = findViewById(R.id.btn_home_continue_scan);
         btnHomeViewSession = findViewById(R.id.btn_home_view_session);
-        btnHomeCreateSession = findViewById(R.id.btn_home_create_session);
         btnHomeEmptyCreateSession = findViewById(R.id.btn_home_empty_create_session);
         rvHomeRecent = findViewById(R.id.rv_home_recent_sessions);
         tvHomeViewHistory = findViewById(R.id.tv_home_view_history);
@@ -169,10 +190,15 @@ public class MainActivity extends com.example.th9.ui.DataActivity {
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.menu_main, menu);
+        menu.clear();
         menu.add(0,7301,1,"Lịch sử: Lọc thời gian");menu.add(0,7302,2,"Lịch sử: Lọc trạng thái");
         menu.add(0,7303,3,"Sắp xếp lớp A–Z / Z–A");
         return true;
+    }
+    @Override public boolean onPrepareOptionsMenu(Menu menu){
+        for(int id:new int[]{7301,7302})if(menu.findItem(id)!=null)menu.findItem(id).setVisible(currentTabId==R.id.nav_history);
+        if(menu.findItem(7303)!=null)menu.findItem(7303).setVisible(viewClasses.getVisibility()==View.VISIBLE);
+        return super.onPrepareOptionsMenu(menu);
     }
 
     @Override
@@ -190,30 +216,89 @@ public class MainActivity extends com.example.th9.ui.DataActivity {
 
     private void setupBottomNav() {
         bottomNav.setOnItemSelectedListener(item -> {
+            if(item.getItemId()==R.id.nav_timetable){startActivity(new Intent(this,com.example.th9.ui.TimetableActivity.class));return false;}
             showTab(item.getItemId());
             return true;
         });
+        bottomNav.setOnItemReselectedListener(item->{if(item.getItemId()==R.id.nav_timetable)startActivity(new Intent(this,com.example.th9.ui.TimetableActivity.class));else showTab(item.getItemId());});
+    }
+    private void setupPersonalTab(){
+        findViewById(R.id.personal_history).setOnClickListener(v->openHistory());
+        findViewById(R.id.personal_settings).setOnClickListener(v->startActivity(new Intent(this,SettingsActivity.class)));
+        findViewById(R.id.personal_logout).setOnClickListener(v->new com.google.android.material.dialog.MaterialAlertDialogBuilder(this)
+            .setTitle("Đăng xuất?").setMessage("Buổi đang mở và dữ liệu được giữ nguyên.")
+            .setPositiveButton("Đăng xuất",(d,w)->com.example.th9.data.Tasks.run(this,v,()->{AttendanceRepository.getInstance().logout();return true;},ok->{
+                startActivity(new Intent(this,com.example.th9.ui.LoginActivity.class).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK|Intent.FLAG_ACTIVITY_CLEAR_TASK));finish();
+            })).setNegativeButton("Hủy",null).show());
+        refreshPersonalData();
+    }
+    private void refreshPersonalData(){
+        com.example.th9.model.Account account=AttendanceRepository.getInstance().currentAccount();if(account==null)return;
+        ((TextView)findViewById(R.id.personal_name)).setText(account.fullName);
+        ((TextView)findViewById(R.id.personal_username)).setText(account.username);
+        ((TextView)findViewById(R.id.personal_role)).setText(account.isAdmin()?"Quản trị viên":"Giảng viên");
+    }
+    private void openHistory(){
+        bottomNav.setSelectedItemId(R.id.nav_personal);
+        showTab(R.id.nav_history);refreshHistoryData();
+    }
+
+    private void setupManagementTab(){
+        findViewById(R.id.card_manage_students).setOnClickListener(v->
+            startActivity(new Intent(this,com.example.th9.ui.StudentsActivity.class)));
+        findViewById(R.id.card_manage_classes).setOnClickListener(v->openClassManagement());
+        findViewById(R.id.card_manage_teachers).setOnClickListener(v->startActivity(new Intent(this,com.example.th9.ui.TeacherAccountsActivity.class)));
+        managementBack=new androidx.activity.OnBackPressedCallback(false){
+            @Override public void handleOnBackPressed(){showTab(currentTabId==R.id.nav_history?R.id.nav_personal:R.id.nav_classes);}
+        };
+        getOnBackPressedDispatcher().addCallback(this,managementBack);
+        toolbar.setNavigationOnClickListener(v->{if(currentTabId==R.id.nav_history)showTab(R.id.nav_personal);else if(showingClassManagement)showTab(R.id.nav_classes);});
+    }
+
+    private void openClassManagement(){
+        showingClassManagement=AttendanceRepository.getInstance().isAdmin();
+        viewManagement.setVisibility(View.GONE);
+        viewClasses.setVisibility(View.VISIBLE);
+        managementBack.setEnabled(showingClassManagement);
+        if(getSupportActionBar()!=null){
+            getSupportActionBar().setTitle(AttendanceRepository.getInstance().isAdmin()?"Quản lý lớp học":"Lớp được phân công");
+            getSupportActionBar().setDisplayHomeAsUpEnabled(showingClassManagement);
+        }
+        invalidateOptionsMenu();
     }
 
     private void showTab(int navId) {
+        if(AttendanceRepository.getInstance().isAdmin()&&navId==R.id.nav_home)navId=R.id.nav_classes;
         currentTabId = navId;
+        showingClassManagement=false;
+        managementBack.setEnabled(false);
         viewHome.setVisibility(navId == R.id.nav_home ? View.VISIBLE : View.GONE);
-        viewClasses.setVisibility(navId == R.id.nav_classes ? View.VISIBLE : View.GONE);
+        viewManagement.setVisibility(navId == R.id.nav_classes ? View.VISIBLE : View.GONE);
+        viewClasses.setVisibility(View.GONE);
         viewHistory.setVisibility(navId == R.id.nav_history ? View.VISIBLE : View.GONE);
+        viewPersonal.setVisibility(navId == R.id.nav_personal ? View.VISIBLE : View.GONE);
+        if(navId==R.id.nav_history)managementBack.setEnabled(true);
 
         if (getSupportActionBar() != null) {
+            getSupportActionBar().setDisplayHomeAsUpEnabled(navId==R.id.nav_history);
             if (navId == R.id.nav_home) {
                 getSupportActionBar().setTitle(R.string.app_name);
             } else if (navId == R.id.nav_classes) {
-                getSupportActionBar().setTitle(R.string.classes_title);
+                getSupportActionBar().setTitle(R.string.management_title);
             } else if (navId == R.id.nav_history) {
                 getSupportActionBar().setTitle(R.string.history_title);
+            } else if(navId==R.id.nav_personal){
+                getSupportActionBar().setTitle(R.string.nav_personal);
             }
         }
+        if(navId==R.id.nav_classes&&!AttendanceRepository.getInstance().isAdmin())openClassManagement();
+        if(navId==R.id.nav_personal)refreshPersonalData();
+        invalidateOptionsMenu();
     }
 
     // --- 1. HOME TAB SETUP ---
     private void setupHomeTab() {
+        homeSuggestions=new com.example.th9.ui.HomeScheduleSuggestions(this);
         homeRecentAdapter = new SessionAdapter(this, session -> {
             Intent intent = new Intent(this, SessionDetailActivity.class);
             intent.putExtra(SessionDetailActivity.EXTRA_SESSION_ID, session.getId());
@@ -243,22 +328,24 @@ public class MainActivity extends com.example.th9.ui.DataActivity {
 
         View.OnClickListener createSessionListener = v -> {
             if(AttendanceRepository.getInstance().getAllClasses().isEmpty()){
-                startActivity(new Intent(this,ClassFormActivity.class));return;
+                if(AttendanceRepository.getInstance().isAdmin())startActivity(new Intent(this,ClassFormActivity.class));
+                else new com.google.android.material.dialog.MaterialAlertDialogBuilder(this).setMessage("Bạn chưa được phân công lớp. Liên hệ quản trị viên.").setPositiveButton("Đóng",null).show();return;
             }
             Intent intent = new Intent(this, SessionFormActivity.class);
             startActivity(intent);
         };
-        btnHomeCreateSession.setOnClickListener(createSessionListener);
         btnHomeEmptyCreateSession.setOnClickListener(createSessionListener);
 
         tvHomeViewHistory.setOnClickListener(v -> {
-            bottomNav.setSelectedItemId(R.id.nav_history);
+            openHistory();
         });
 
         refreshHomeData();
     }
 
     private void refreshHomeData() {
+        if(AttendanceRepository.getInstance().isAdmin())return;
+        int suggested=homeSuggestions==null?0:homeSuggestions.render(System.currentTimeMillis());
         AttendanceSession active = AttendanceRepository.getInstance().getActiveSession();
         if (active != null) {
             cardActiveSession.setVisibility(View.VISIBLE);
@@ -269,7 +356,7 @@ public class MainActivity extends com.example.th9.ui.DataActivity {
             if (cr != null) {
                 tvHomeActiveClass.setText(AttendanceRepository.getInstance().sessionClassLabel(active));
             }
-            tvHomeActiveTime.setText(active.getStartTime() + " • " + active.getDate());
+            tvHomeActiveTime.setText(active.getStartTime() + " • " + active.getDate()+"\n"+active.getTeacherNameSnapshot());
 
             int present = AttendanceRepository.getInstance().getPresentCount(active.getId());
             int late = AttendanceRepository.getInstance().getLateCount(active.getId());
@@ -283,9 +370,9 @@ public class MainActivity extends com.example.th9.ui.DataActivity {
             progressHomeActive.setProgress(pct);
         } else {
             cardActiveSession.setVisibility(View.GONE);
-            cardNoActiveSession.setVisibility(View.VISIBLE);
+            cardNoActiveSession.setVisibility(suggested>0?View.GONE:View.VISIBLE);
         }
-        btnHomeEmptyCreateSession.setText(AttendanceRepository.getInstance().getAllClasses().isEmpty()?"Tạo lớp":"Tạo buổi điểm danh");
+        btnHomeEmptyCreateSession.setText(AttendanceRepository.getInstance().getAllClasses().isEmpty()?(AttendanceRepository.getInstance().isAdmin()?"Tạo lớp":"Chưa được phân công lớp"):"Tạo buổi ngoài lịch");
 
         // Recent sessions (finished sessions)
         List<AttendanceSession> all = AttendanceRepository.getInstance().getAllSessions();

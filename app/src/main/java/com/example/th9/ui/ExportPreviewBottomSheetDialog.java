@@ -72,9 +72,9 @@ public class ExportPreviewBottomSheetDialog extends BottomSheetDialogFragment {
     }
     private void update(){
         if(!isAdded())return;
-        if(AttendanceRepository.getInstance().getSessionById(sessionId)==null){preview.setText("Đang tải dữ liệu buổi…");return;}
+        if(AttendanceRepository.getInstance().getSessionById(sessionId)==null){preview.setText("Đang tải thông tin buổi…");return;}
         ((TextView)requireView().findViewById(R.id.tv_export_session_info)).setText(CsvTransfer.summary(AttendanceRepository.getInstance(),sessionId));
         try{preview.setText(format.getCheckedRadioButtonId()==R.id.rb_export_csv?CsvTransfer.csv(AttendanceRepository.getInstance(),sessionId):CsvTransfer.summary(AttendanceRepository.getInstance(),sessionId));}
-        catch(IOException e){preview.setText("Không tạo được nội dung: "+e.getMessage());}
+        catch(IOException e){preview.setText("Không thể tạo nội dung lúc này. Vui lòng thử lại.");}
     }
 }

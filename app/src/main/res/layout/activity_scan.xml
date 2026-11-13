@@ -76,7 +76,8 @@
             android:id="@+id/camera_preview"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            app:implementationMode="compatible" />
+            app:implementationMode="compatible"
+            app:scaleType="fitCenter" />
 
         <!-- Camera Unavailable Overlay (State 6) -->
         <LinearLayout
@@ -101,7 +102,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/spacing_md"
                 android:id="@+id/tv_camera_error"
-                android:text="Camera không khả dụng"
+                android:text="Không thể mở camera"
                 android:textColor="@color/white"
                 android:textSize="@dimen/text_title"
                 android:textStyle="bold" />
@@ -111,7 +112,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/spacing_xs"
                 android:gravity="center"
-                android:text="Kiểm tra quyền camera hoặc dùng điểm danh thủ công."
+                android:text="Hãy cấp quyền truy cập camera hoặc điểm danh bằng MSSV."
                 android:textColor="#94A3B8"
                 android:textSize="@dimen/text_body" />
 
@@ -146,23 +147,6 @@
                 android:layout_gravity="center_vertical"
                 android:background="#EF4444" />
         </FrameLayout>
-
-        <!-- Aim Instruction Text -->
-        <TextView
-            android:id="@+id/tv_scan_instruction"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_below="@id/fl_reticle_frame"
-            android:layout_centerHorizontal="true"
-            android:layout_marginTop="@dimen/spacing_lg"
-            android:background="#80000000"
-            android:paddingStart="@dimen/spacing_md"
-            android:paddingTop="@dimen/spacing_xs"
-            android:paddingEnd="@dimen/spacing_md"
-            android:paddingBottom="@dimen/spacing_xs"
-            android:text="@string/scan_aim_instruction"
-            android:textColor="@color/white"
-            android:textSize="@dimen/text_body_sm" />
 
     </RelativeLayout>
 
@@ -224,7 +208,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="2dp"
-                        android:text="Hướng camera vào mã vạch trên thẻ sinh viên"
+                        android:visibility="gone"
                         android:textColor="#94A3B8"
                         android:textSize="@dimen/text_caption" />
                 </LinearLayout>
@@ -274,40 +258,6 @@
                 app:cornerRadius="@dimen/corner_md"
                 app:icon="@drawable/ic_edit"
                 app:iconTint="@color/white" />
-        </LinearLayout>
-
-        <!-- Link Card Mode Actions -->
-        <LinearLayout
-            android:id="@+id/ll_scan_actions_link"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/spacing_sm"
-            android:orientation="horizontal"
-            android:visibility="gone">
-
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/btn_link_rescan"
-                style="@style/Widget.Material3.Button.OutlinedButton"
-                android:layout_width="0dp"
-                android:layout_height="@dimen/min_touch_target"
-                android:layout_marginEnd="@dimen/spacing_xs"
-                android:layout_weight="1"
-                android:text="Quét lại"
-                android:textColor="@color/white"
-                app:cornerRadius="@dimen/corner_md"
-                app:strokeColor="#64748B" />
-
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/btn_link_confirm"
-                android:layout_width="0dp"
-                android:layout_height="@dimen/min_touch_target"
-                android:layout_marginStart="@dimen/spacing_xs"
-                android:layout_weight="1"
-                android:backgroundTint="@color/status_present"
-                android:text="Xác nhận gắn mã"
-                android:textColor="@color/white"
-                android:textStyle="bold"
-                app:cornerRadius="@dimen/corner_md" />
         </LinearLayout>
 
     </LinearLayout>

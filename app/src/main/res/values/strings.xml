@@ -1,11 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">Điểm Danh Mã Vạch</string>
-    <string name="app_subtitle">Hệ thống điểm danh sinh viên qua thẻ</string>
+    <string name="app_name">Điểm danh mã vạch</string>
+    <string name="app_subtitle">Điểm danh sinh viên bằng thẻ mã vạch</string>
 
     <!-- Navigation Tabs -->
     <string name="nav_home">Trang chủ</string>
     <string name="nav_classes">Lớp học</string>
+    <string name="nav_management">Quản lý</string>
+    <string name="management_title">Quản lý</string>
+    <string name="management_description">Chọn mục bạn muốn quản lý</string>
+    <string name="management_students">Quản lý sinh viên</string>
+    <string name="management_students_description">Hồ sơ, ảnh và thẻ điện tử</string>
+    <string name="management_classes">Quản lý lớp học</string>
+    <string name="management_classes_description">Danh sách lớp, sinh viên và các buổi điểm danh</string>
     <string name="nav_history">Lịch sử</string>
 
     <!-- General Actions -->
@@ -24,7 +31,7 @@
     <string name="action_retry">Thử lại</string>
 
     <!-- Home Screen -->
-    <string name="home_title">Điểm Danh Sinh Viên</string>
+    <string name="home_title">Điểm danh sinh viên</string>
     <string name="home_active_session_title">Buổi học đang diễn ra</string>
     <string name="home_btn_continue_scan">Tiếp tục quét thẻ</string>
     <string name="home_btn_create_session">Tạo buổi điểm danh</string>
@@ -35,7 +42,7 @@
 
     <!-- Classes Screen -->
     <string name="classes_title">Danh sách lớp học</string>
-    <string name="classes_search_hint">Tìm tên lớp hoặc mã nhóm...</string>
+    <string name="classes_search_hint">Tìm tên lớp hoặc mã nhóm…</string>
     <string name="classes_btn_add">Thêm lớp học</string>
     <string name="classes_empty_title">Chưa có lớp học nào</string>
     <string name="classes_empty_desc">Tạo lớp học đầu tiên để quản lý danh sách sinh viên và các buổi điểm danh.</string>
@@ -58,7 +65,7 @@
     <string name="class_detail_sessions_count">buổi điểm danh</string>
     <string name="class_detail_btn_new_session">Tạo buổi</string>
     <string name="class_detail_btn_add_student">Thêm sinh viên</string>
-    <string name="class_detail_search_student_hint">Tìm họ tên, MSSV, mã thẻ...</string>
+    <string name="class_detail_search_student_hint">Tìm họ tên, MSSV hoặc mã thẻ…</string>
     <string name="class_detail_sort_name">Theo họ tên (A - Z)</string>
     <string name="class_detail_sort_mssv">Theo MSSV</string>
     <string name="class_detail_import_csv">Nhập sinh viên từ CSV</string>
@@ -76,14 +83,14 @@
     <string name="student_card_code_section">Mã vạch thẻ sinh viên</string>
     <string name="student_card_status_linked">Đã gắn mã thẻ:</string>
     <string name="student_card_status_unlinked">Chưa gắn mã thẻ</string>
-    <string name="student_btn_scan_barcode">Quét / Gắn mã thẻ</string>
-    <string name="student_btn_change_barcode">Đổi mã thẻ khác</string>
+    <string name="student_btn_scan_barcode">Quét mã vạch trên thẻ</string>
+    <string name="student_btn_change_barcode">Đổi mã thẻ</string>
     <string name="student_profile_title">Hồ sơ sinh viên</string>
     <string name="student_profile_attendance_history">Lịch sử điểm danh gần đây</string>
 
     <!-- Session Form -->
     <string name="session_form_create_title">Tạo buổi điểm danh</string>
-    <string name="session_form_edit_title">Chỉnh sửa buổi</string>
+    <string name="session_form_edit_title">Chỉnh sửa buổi điểm danh</string>
     <string name="session_form_class_label">Chọn lớp học *</string>
     <string name="session_form_title_label">Tên buổi điểm danh *</string>
     <string name="session_form_title_hint">Ví dụ: Buổi 05: Điểm danh tuần 5</string>
@@ -91,7 +98,7 @@
     <string name="session_form_time_label">Giờ bắt đầu *</string>
     <string name="session_form_late_toggle">Tính đi muộn theo mốc giờ</string>
     <string name="session_form_late_time_label">Mốc giờ tính đi muộn *</string>
-    <string name="session_form_late_hint">Sau mốc này, lượt quét sẽ được ghi nhận là Đi muộn</string>
+    <string name="session_form_late_hint">Chỉ áp dụng khi bật và chọn mốc giờ cho buổi này</string>
     <string name="session_form_expected_count">Sĩ số dự kiến:</string>
     <string name="session_form_btn_preview">Xem trước buổi</string>
     <string name="session_form_btn_submit">Tạo buổi điểm danh</string>
@@ -110,16 +117,15 @@
     <!-- Scanner Screen -->
     <string name="scan_title">Quét mã vạch điểm danh</string>
     <string name="scan_link_card_title">Gắn mã thẻ sinh viên</string>
-    <string name="scan_aim_instruction">Căn mã vạch 1D trên thẻ sinh viên vào khung ngang</string>
+    <string name="scan_aim_instruction">Đưa thẻ vào vùng camera để quét; không cần căn mã vào khung</string>
     <string name="scan_aim_link_instruction">Quét mã vạch trên thẻ của %1$s để liên kết</string>
-    <string name="scan_btn_simulate">Mô phỏng lượt quét</string>
     <string name="scan_btn_manual">Nhập MSSV</string>
-    <string name="scan_state_waiting">Đang chờ quét mã...</string>
+    <string name="scan_state_waiting">Đang chờ quét mã…</string>
     <string name="scan_state_success">Điểm danh thành công</string>
     <string name="scan_state_duplicate">Đã điểm danh trước đó</string>
     <string name="scan_state_wrong_class">Sinh viên không thuộc lớp này</string>
-    <string name="scan_state_unregistered">Mã thẻ chưa được đăng ký trong hệ thống</string>
-    <string name="scan_state_camera_error">Camera không khả dụng</string>
+    <string name="scan_state_unregistered">Thẻ này chưa được liên kết với sinh viên nào</string>
+    <string name="scan_state_camera_error">Không thể mở camera</string>
 
     <!-- Results Screen -->
     <string name="result_title">Kết quả buổi điểm danh</string>
@@ -128,7 +134,7 @@
     <string name="result_filter_present">Có mặt</string>
     <string name="result_filter_late">Đi muộn</string>
     <string name="result_filter_absent">Vắng</string>
-    <string name="result_filter_unchecked">Chưa điểm</string>
+    <string name="result_filter_unchecked">Chưa điểm danh</string>
     <string name="result_change_status">Chỉnh trạng thái</string>
 
     <!-- History Screen -->
@@ -146,31 +152,59 @@
     <string name="stats_chart_title">Biểu đồ chuyên cần theo buổi</string>
 
     <!-- CSV & Export -->
-    <string name="csv_import_title">Xem trước nhập CSV</string>
-    <string name="csv_guide_title">Yêu cầu định dạng tệp:</string>
-    <string name="csv_guide_content">CSV UTF-8: header mssv,ho_ten; tùy chọn ma_the. MSSV là chuỗi và giữ số 0 đầu. Tệp có dòng lỗi sẽ không được nhập.</string>
+    <string name="csv_import_title">Nhập danh sách sinh viên</string>
+    <string name="csv_guide_title">Chuẩn bị tệp CSV</string>
+    <string name="csv_guide_content">Lưu tệp UTF-8 với các cột ho_ten, ngay_sinh (dd/MM/yyyy), nien_khoa (ví dụ 2022-2026), gioi_tinh (Nam, Nữ hoặc Khác). MSSV sẽ được tự cấp theo niên khóa. Hãy sửa các dòng chưa hợp lệ trước khi nhập.</string>
     <string name="csv_btn_pick">Chọn tệp CSV</string>
-    <string name="csv_btn_sample">Dùng tệp mẫu minh họa</string>
-    <string name="export_title">Xem trước xuất / chia sẻ</string>
+    <string name="csv_btn_sample">Dùng tệp mẫu</string>
+    <string name="export_title">Xuất và chia sẻ kết quả</string>
     <string name="export_type_csv">Xuất tệp CSV (.csv)</string>
     <string name="export_type_txt">Văn bản tóm tắt (.txt)</string>
-    <string name="export_btn_share">Xem trước chia sẻ</string>
+    <string name="export_btn_share">Chia sẻ kết quả</string>
 
     <!-- Settings -->
     <string name="settings_title">Cài đặt</string>
-    <string name="settings_theme_title">Giao diện hiển thị</string>
+    <string name="settings_theme_title">Giao diện</string>
     <string name="settings_theme_light">Giao diện sáng</string>
     <string name="settings_theme_dark">Giao diện tối</string>
     <string name="settings_theme_system">Theo hệ thống</string>
     <string name="settings_feedback_title">Phản hồi khi quét</string>
-    <string name="settings_beep_sound">Phát âm thanh bíp khi quét trúng</string>
+    <string name="settings_beep_sound">Phát âm báo khi quét thành công</string>
     <string name="settings_vibrate">Rung nhẹ khi quét thành công</string>
-    <string name="settings_ui_preview_title">Xem trước giao diện (UI Catalog)</string>
-    <string name="settings_app_info">Thông tin phiên bản: 1.0 (Bản xem trước UI/UX)</string>
+    <string name="settings_app_info">Phiên bản 1.0</string>
 
     <!-- Context Menu Options -->
     <string name="context_view_profile">Xem hồ sơ sinh viên</string>
     <string name="context_edit_student">Chỉnh sửa thông tin</string>
     <string name="context_link_card">Gắn mã thẻ</string>
     <string name="context_change_status">Chỉnh trạng thái điểm danh</string>
+    <string name="student_delete">Xóa sinh viên</string>
+    <string name="student_delete_title">Xóa sinh viên?</string>
+    <string name="student_delete_message">%1$s\nMSSV: %2$s\n\nSinh viên sẽ được gỡ khỏi danh sách và tất cả các lớp hiện tại. Lịch sử điểm danh vẫn được giữ nguyên; thẻ sinh viên không còn dùng để quét.</string>
+    <string name="student_deleted">Đã xóa sinh viên</string>
+    <string name="teachers_title">Quản lý giảng viên</string>
+    <string name="teachers_directory">Danh sách giảng viên</string>
+    <string name="teachers_add">Thêm giảng viên</string>
+    <string name="teachers_search">Tìm tên hoặc tài khoản</string>
+    <string name="teachers_summary">%1$d đang hoạt động · %2$d đã khóa</string>
+    <string name="teachers_results">Hiển thị %1$d/%2$d giảng viên</string>
+    <string name="teachers_sort">Sắp xếp giảng viên</string>
+    <string name="teachers_empty">Chưa có giảng viên</string>
+    <string name="teachers_empty_description">Thêm tài khoản giảng viên để bắt đầu phân công lớp.</string>
+    <string name="teachers_no_results">Không tìm thấy giảng viên</string>
+    <string name="teachers_no_results_description">Thử tên hoặc tài khoản khác. Có thể tìm bằng tiếng Việt không dấu.</string>
+    <string name="teachers_clear_search">Xóa tìm kiếm</string>
+    <string name="teachers_active">Hoạt động</string>
+    <string name="teachers_locked">Đã khóa</string>
+    <string name="teachers_classes">%1$d lớp được phân công</string>
+    <string name="teachers_assign">Phân công lớp</string>
+    <string name="teachers_actions">Thao tác giảng viên</string>
+    <string name="teachers_edit">Sửa tên / đặt lại mật khẩu</string>
+    <string name="teachers_lock">Khóa tài khoản</string>
+    <string name="teachers_unlock">Mở khóa tài khoản</string>
+    <string-array name="teachers_sort_labels">
+        <item>Tên A–Z</item><item>Tên Z–A</item>
+        <item>Tài khoản A–Z</item><item>Tài khoản Z–A</item>
+        <item>Số lớp giảm dần</item><item>Số lớp tăng dần</item>
+    </string-array>
 </resources>

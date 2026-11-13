@@ -1,3 +1,5 @@
+> Cập nhật 10/11/2026: ứng dụng đã chuyển sang Room v4 và hai vai trò. Xem [bàn giao hiện tại](HE_THONG_2_VAI_TRO.md). Nội dung bên dưới ghi lại các giai đoạn cũ; giới hạn một buổi OPEN toàn ứng dụng đã được thay thế.
+
 # Bàn giao ngày 06/11/2026
 
 ## Khảo sát và thay đổi
@@ -46,3 +48,7 @@ AVD hiện giữ các lớp kiểm thử và buổi “Phuc hoi sau khoi dong la
 - [CsvTransfer.java](app/src/main/java/com/example/th9/data/CsvTransfer.java), [CsvImportPreviewActivity.java](app/src/main/java/com/example/th9/ui/CsvImportPreviewActivity.java), [ExportPreviewBottomSheetDialog.java](app/src/main/java/com/example/th9/ui/ExportPreviewBottomSheetDialog.java).
 - [SessionFormActivity.java](app/src/main/java/com/example/th9/ui/SessionFormActivity.java), [XML Tạo buổi](app/src/main/res/layout/activity_session_form.xml), [SessionResultActivity.java](app/src/main/java/com/example/th9/ui/SessionResultActivity.java).
 - [README](README.md) có hướng dẫn Run và ví dụ CSV. [APK debug](app/build/outputs/apk/debug/app-debug.apk).
+
+## Bổ sung ngày 10/11/2026
+
+Xem [bàn giao quản lý sinh viên và thẻ điện tử](BAO_CAO_THE_SINH_VIEN.md) cho thay đổi schema 2, thẻ CODE_128, scanner và kết quả kiểm thử mới. Nội dung phía trên là báo cáo lịch sử của phiên bản trước.

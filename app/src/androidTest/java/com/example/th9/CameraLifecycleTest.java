@@ -36,7 +36,7 @@ public class CameraLifecycleTest {
     @Test public void backCameraStreamsAfterRecreationAndReopen() throws Exception {
         Context context=InstrumentationRegistry.getInstrumentation().getTargetContext();
         InstrumentationRegistry.getInstrumentation().getUiAutomation().grantRuntimePermission(context.getPackageName(),Manifest.permission.CAMERA);
-        Intent intent=new Intent(context,ScanActivity.class).putExtra(ScanActivity.EXTRA_MODE,ScanActivity.MODE_LINK_CARD);
+        Intent intent=new Intent(context,ScanActivity.class).putExtra(ScanActivity.EXTRA_MODE,ScanActivity.MODE_VERIFY_CARD);
         try(ActivityScenario<ScanActivity> scenario=ActivityScenario.launch(intent)){
             streaming(scenario);scenario.recreate();streaming(scenario);
             rotate(scenario,android.content.pm.ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE,android.content.res.Configuration.ORIENTATION_LANDSCAPE);

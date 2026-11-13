@@ -60,7 +60,7 @@ public class SessionAdapter extends RecyclerView.Adapter<SessionAdapter.SessionV
             holder.tvClass.setText("Lớp học");
         }
 
-        holder.tvDateTime.setText(item.getStartTime() + " • " + item.getDate());
+        holder.tvDateTime.setText(item.getStartTime() + " • " + item.getDate()+"\n"+item.getScheduleLabel()+"\n"+item.getTeacherNameSnapshot());
 
         // Status badge
         switch (item.getStatus()) {
@@ -78,7 +78,7 @@ public class SessionAdapter extends RecyclerView.Adapter<SessionAdapter.SessionV
                 holder.tvStatusBadge.setText(R.string.session_status_upcoming);
                 holder.tvStatusBadge.setBackgroundResource(R.drawable.bg_badge_unchecked);
                 holder.tvStatusBadge.setTextColor(ContextCompat.getColor(context, R.color.text_secondary));
-                holder.tvStats.setText("Sĩ số: " + item.getExpectedCount() + " SV");
+                holder.tvStats.setText("Sĩ số: " + item.getExpectedCount() + " sinh viên");
                 break;
             case CLOSED:
                 holder.tvStatusBadge.setText(R.string.session_status_finished);

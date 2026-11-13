@@ -137,7 +137,7 @@ public class ManualAttendanceBottomSheetDialog extends BottomSheetDialogFragment
             com.example.th9.data.Tasks.run(requireActivity(),btnConfirm,()->
                 AttendanceRepository.getInstance().manual(sessionId,selectedStudent.getId(),System.currentTimeMillis()),record->{
                 if(!isAdded())return;
-                Toast.makeText(requireContext(),"Ghi nhận thành công: "+record.getNameSnapshot()+" · "+record.getStatusDisplayName(),Toast.LENGTH_SHORT).show();
+                Toast.makeText(requireContext(),"Đã điểm danh: "+record.getNameSnapshot()+" · "+record.getStatusDisplayName(),Toast.LENGTH_SHORT).show();
                 if(callback!=null)callback.onAttendanceChanged();
                 getParentFragmentManager().setFragmentResult("attendance_changed",new Bundle());dismiss();
             });

@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android" android:layout_width="match_parent" android:layout_height="wrap_content">
+    <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical" android:padding="20dp">
+        <TextView android:layout_width="match_parent" android:layout_height="wrap_content" android:text="MSSV của bạn là:" android:textColor="@color/text_primary" android:textSize="18sp" />
+        <TextView android:id="@+id/created_student_number" android:layout_width="match_parent" android:layout_height="wrap_content" android:paddingVertical="12dp" android:textColor="@color/primary" android:textSize="24sp" android:textStyle="bold" android:textIsSelectable="true" />
+        <com.example.th9.view.StudentCardView android:id="@+id/created_student_card" android:layout_width="match_parent" android:layout_height="wrap_content" />
+    </LinearLayout>
+</ScrollView>

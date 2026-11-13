@@ -23,6 +23,8 @@ android {
         }
     }
 
+    sourceSets.getByName("androidTest").assets.srcDir("$projectDir/schemas")
+
     buildTypes {
         release {
             optimization {
@@ -45,7 +47,7 @@ dependencies {
     implementation("com.google.mlkit:barcode-scanning:17.3.0")
     implementation("org.apache.commons:commons-csv:1.10.0")
     androidTestImplementation("androidx.room:room-testing:2.8.4")
-    androidTestImplementation("com.google.zxing:core:3.5.3")
+    implementation("com.google.zxing:core:3.5.3")
     implementation(libs.activity.ktx)
     implementation(libs.appcompat)
     implementation(libs.constraintlayout)

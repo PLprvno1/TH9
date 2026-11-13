@@ -113,7 +113,7 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_marginTop="2dp"
-                            android:text="Tổng lượt tham dự / tổng lượt phải điểm danh"
+                            android:text="Số lượt có mặt và đi muộn trên tổng số lượt điểm danh"
                             android:textColor="@color/text_tertiary"
                             android:textSize="10sp" />
                     </LinearLayout>
@@ -193,7 +193,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="2dp"
-                        android:text="Phân bố Có mặt, Đi muộn và Vắng mặt qua từng buổi học"
+                        android:text="Tình hình chuyên cần qua từng buổi học"
                         android:textColor="@color/text_secondary"
                         android:textSize="@dimen/text_caption" />
 
@@ -216,7 +216,7 @@
                         <View
                             android:layout_width="12dp"
                             android:layout_height="12dp"
-                            android:background="@drawable/bg_badge_present" />
+                            android:background="@drawable/bg_chart_legend_present" />
 
                         <TextView
                             android:layout_width="wrap_content"
@@ -231,7 +231,7 @@
                         <View
                             android:layout_width="12dp"
                             android:layout_height="12dp"
-                            android:background="@drawable/bg_badge_late" />
+                            android:background="@drawable/bg_chart_legend_late" />
 
                         <TextView
                             android:layout_width="wrap_content"
@@ -246,7 +246,7 @@
                         <View
                             android:layout_width="12dp"
                             android:layout_height="12dp"
-                            android:background="@drawable/bg_badge_absent" />
+                            android:background="@drawable/bg_chart_legend_absent" />
 
                         <TextView
                             android:layout_width="wrap_content"
@@ -257,8 +257,70 @@
                             android:textSize="@dimen/text_caption" />
                     </LinearLayout>
 
+                    <TextView
+                        android:id="@+id/tv_stats_chart_summary"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="@dimen/spacing_md"
+                        android:textColor="@color/text_secondary"
+                        android:textSize="@dimen/text_caption" />
+
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/spacing_lg"
+                android:text="@string/stats_report_title"
+                android:textColor="@color/text_primary"
+                android:textSize="@dimen/text_title"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/tv_stats_report_period"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:textColor="@color/primary"
+                android:textSize="@dimen/text_caption" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:text="@string/stats_report_legend"
+                android:textColor="@color/text_secondary"
+                android:textSize="@dimen/text_caption" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:text="@string/stats_report_hint"
+                android:textColor="@color/text_secondary"
+                android:textSize="@dimen/text_caption" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:text="@string/stats_report_scope"
+                android:textColor="@color/text_secondary"
+                android:textSize="@dimen/text_caption" />
+
+            <LinearLayout
+                android:id="@+id/ll_stats_report_tables"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btn_stats_export_excel"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/spacing_lg"
+                android:text="@string/stats_report_export" />
 
         </LinearLayout>
     </androidx.core.widget.NestedScrollView>

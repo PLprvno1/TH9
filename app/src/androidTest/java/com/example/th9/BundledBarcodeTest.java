@@ -29,4 +29,18 @@ public class BundledBarcodeTest {
             assertEquals(1,results.size());assertEquals(value,results.get(0).getRawValue());assertEquals(Barcode.FORMAT_CODE_128,results.get(0).getFormat());
         }finally{scanner.close();bitmap.recycle();}
     }
+    @Test public void bundledDecoderReadsCornersAndRotation()throws Exception{
+        String value="202020260001";int width=1600,height=900;
+        BitMatrix bars=new Code128Writer().encode(value,BarcodeFormat.CODE_128,600,120);
+        BarcodeScanner scanner=BarcodeScanning.getClient(new BarcodeScannerOptions.Builder().setBarcodeFormats(Barcode.FORMAT_CODE_128).build());
+        try{for(int left:new int[]{20,width-620})for(int top:new int[]{20,height-140}){
+            Bitmap image=Bitmap.createBitmap(width,height,Bitmap.Config.ARGB_8888);image.eraseColor(0xffffffff);
+            try{for(int y=0;y<120;y++)for(int x=0;x<600;x++)if(bars.get(x,y))image.setPixel(left+x,top+y,0xff000000);
+                for(int rotation:new int[]{0,90}){
+                    List<Barcode> found=Tasks.await(scanner.process(InputImage.fromBitmap(image,rotation)),30,TimeUnit.SECONDS);
+                    assertEquals("Code at corner must decode without a reticle",1,found.size());assertEquals(value,found.get(0).getRawValue());
+                }
+            }finally{image.recycle();}
+        }}finally{scanner.close();}
+    }
 }

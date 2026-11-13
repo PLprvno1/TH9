@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="class_select_students_title">Chọn sinh viên vào lớp</string>
+    <string name="class_select_students_hint">Chọn sinh viên trong danh sách để thêm vào lớp.</string>
+    <string name="class_select_students_search">Tìm họ tên hoặc MSSV</string>
+    <string name="class_select_students_count">Đã chọn %1$d sinh viên mới</string>
+    <string name="class_select_students_save">Thêm %1$d sinh viên vào lớp</string>
+    <string name="class_select_students_empty">Chưa có sinh viên nào. Hãy thêm sinh viên hoặc nhập danh sách trong mục Quản lý sinh viên.</string>
+    <string name="class_select_students_no_results">Không tìm thấy sinh viên phù hợp.</string>
+</resources>

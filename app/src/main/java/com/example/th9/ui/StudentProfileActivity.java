@@ -1,136 +1,55 @@
 package com.example.th9.ui;
 
 import android.content.Intent;
-import android.graphics.drawable.GradientDrawable;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.widget.FrameLayout;
-import android.widget.LinearLayout;
-import android.widget.TextView;
-
-import androidx.appcompat.app.AppCompatActivity;
+import android.widget.*;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.content.ContextCompat;
-
 import com.example.th9.R;
-import com.example.th9.data.AttendanceRepository;
-import com.example.th9.model.AttendanceRecord;
-import com.example.th9.model.AttendanceSession;
-import com.example.th9.model.ClassRoom;
-import com.example.th9.model.Student;
-import com.google.android.material.button.MaterialButton;
+import com.example.th9.data.*;
+import com.example.th9.model.*;
+import com.example.th9.view.StudentCardView;
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
+import java.util.*;
 
-import java.util.List;
-
-public class StudentProfileActivity extends com.example.th9.ui.DataActivity {
-
-    public static final String EXTRA_STUDENT_ID = "extra_student_id";
-    public static final String EXTRA_CLASS_ID = "extra_class_id";
-
+public class StudentProfileActivity extends DataActivity {
+    public static final String EXTRA_STUDENT_ID="extra_student_id",EXTRA_CLASS_ID="extra_class_id";
     private String studentId;
-    private String classId;
-
-    private Toolbar toolbar;
-    private FrameLayout flAvatar;
-    private TextView tvInitial, tvName, tvMssv, tvClass, tvBarcodeCode, tvBarcodeBadge;
-    private MaterialButton btnEdit, btnLinkCard;
+    private TextView tvName,tvMssv,tvClass,tvBirth,tvCourse,tvGender,tvPhone,cardError;
+    private ImageView avatar;
+    private StudentCardView card;
     private LinearLayout llHistoryContainer;
-
-    @Override
-    protected void onReady(Bundle savedInstanceState) {
-
-        setContentView(R.layout.activity_student_profile);
-
-        studentId = getIntent().getStringExtra(EXTRA_STUDENT_ID);
-        classId = getIntent().getStringExtra(EXTRA_CLASS_ID);
-
-
-
-        initViews();
-        setupToolbar();
-        setupListeners();
+    @Override protected void onReady(Bundle state){
+        setContentView(R.layout.activity_student_profile);studentId=getIntent().getStringExtra(EXTRA_STUDENT_ID);
+        Toolbar toolbar=findViewById(R.id.toolbar_student_profile);setSupportActionBar(toolbar);getSupportActionBar().setTitle("Hồ sơ sinh viên");getSupportActionBar().setDisplayHomeAsUpEnabled(true);toolbar.setNavigationOnClickListener(v->finish());
+        tvName=findViewById(R.id.tv_profile_name);tvMssv=findViewById(R.id.tv_profile_mssv);tvClass=findViewById(R.id.tv_profile_class);tvBirth=findViewById(R.id.tv_profile_birth);tvCourse=findViewById(R.id.tv_profile_course);tvGender=findViewById(R.id.tv_profile_gender);tvPhone=findViewById(R.id.tv_profile_phone);avatar=findViewById(R.id.img_profile_photo);card=findViewById(R.id.profile_student_card);cardError=findViewById(R.id.profile_card_error);llHistoryContainer=findViewById(R.id.ll_profile_history_container);
+        findViewById(R.id.btn_profile_classes).setOnClickListener(v->showClasses(false));findViewById(R.id.btn_profile_add_class).setOnClickListener(v->showClasses(true));
+        findViewById(R.id.btn_profile_edit).setOnClickListener(v->startActivity(new Intent(this,StudentFormActivity.class).putExtra(StudentFormActivity.EXTRA_STUDENT_ID,studentId)));
+        findViewById(R.id.btn_profile_delete).setOnClickListener(v->StudentDeletion.confirm(this,AttendanceRepository.getInstance().getStudentById(studentId),this::finish));
+        if(!AttendanceRepository.getInstance().isAdmin()){findViewById(R.id.btn_profile_delete).setVisibility(View.GONE);findViewById(R.id.btn_profile_edit).setVisibility(View.GONE);findViewById(R.id.btn_profile_add_class).setVisibility(View.GONE);}
+        View.OnClickListener openCard=v->startActivity(new Intent(this,StudentCardActivity.class).putExtra(EXTRA_STUDENT_ID,studentId));card.setOnClickListener(openCard);findViewById(R.id.btn_profile_card_export).setOnClickListener(openCard);
     }
-
-    @Override
-    protected void onDataResume() {
-
-        loadStudentData();
+    @Override protected void onDataResume(){loadStudentData();}
+    private void showClasses(boolean add){
+        AttendanceRepository repo=AttendanceRepository.getInstance();List<ClassRoom> enrolled=repo.getClassesForStudent(studentId),choices=new ArrayList<>();
+        if(add){for(ClassRoom c:repo.getAllClasses()){boolean present=false;for(ClassRoom e:enrolled)if(e.getId().equals(c.getId()))present=true;if(!present)choices.add(c);}}else choices.addAll(enrolled);
+        if(choices.isEmpty()){new MaterialAlertDialogBuilder(this).setTitle(add?"Thêm vào lớp":"Lớp đang học").setMessage(add?"Chưa có lớp khác để thêm. Hãy tạo lớp trong Quản lý lớp học.":"Sinh viên chưa thuộc lớp học nào.").setPositiveButton("Đóng",null).show();return;}
+        String[] labels=new String[choices.size()];for(int i=0;i<labels.length;i++)labels[i]=choices.get(i).getName()+" • "+choices.get(i).getCode();
+        new MaterialAlertDialogBuilder(this).setTitle(add?"Thêm vào lớp đang quản lý":"Các lớp đang học").setItems(labels,(d,n)->{
+            ClassRoom selected=choices.get(n);
+            if(add)Tasks.run(this,null,()->{repo.addExistingToClass(studentId,selected.getId());return true;},ok->{loadStudentData();Toast.makeText(this,"Đã thêm vào lớp "+selected.getName(),Toast.LENGTH_SHORT).show();});
+            else startActivity(new Intent(this,ClassDetailActivity.class).putExtra(ClassDetailActivity.EXTRA_CLASS_ID,selected.getId()));
+        }).show();
     }
-
-    private void initViews() {
-        toolbar = findViewById(R.id.toolbar_student_profile);
-        flAvatar = findViewById(R.id.fl_profile_avatar);
-        tvInitial = findViewById(R.id.tv_profile_initial);
-        tvName = findViewById(R.id.tv_profile_name);
-        tvMssv = findViewById(R.id.tv_profile_mssv);
-        tvClass = findViewById(R.id.tv_profile_class);
-        tvBarcodeCode = findViewById(R.id.tv_profile_barcode_code);
-        tvBarcodeBadge = findViewById(R.id.tv_profile_barcode_status_badge);
-        btnEdit = findViewById(R.id.btn_profile_edit);
-        btnLinkCard = findViewById(R.id.btn_profile_link_card);
-        llHistoryContainer = findViewById(R.id.ll_profile_history_container);
-    }
-
-    private void setupToolbar() {
-        setSupportActionBar(toolbar);
-        if (getSupportActionBar() != null) {
-            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-            getSupportActionBar().setTitle(R.string.student_profile_title);
-        }
-        toolbar.setNavigationOnClickListener(v -> finish());
-    }
-
-    private void setupListeners() {
-        btnEdit.setOnClickListener(v -> {
-            Intent intent = new Intent(this, StudentFormActivity.class);
-            intent.putExtra(StudentFormActivity.EXTRA_STUDENT_ID, studentId);
-            intent.putExtra(StudentFormActivity.EXTRA_CLASS_ID, classId);
-            startActivity(intent);
-        });
-
-        btnLinkCard.setOnClickListener(v -> {
-            Intent intent = new Intent(this, StudentFormActivity.class);
-            intent.putExtra(StudentFormActivity.EXTRA_CLASS_ID, classId);
-            intent.putExtra(StudentFormActivity.EXTRA_STUDENT_ID, studentId);
-            startActivity(intent);
-        });
-    }
-
-    private void loadStudentData() {
-        Student s = AttendanceRepository.getInstance().getStudentById(studentId);
-        if (s == null) return;
-
-        tvName.setText(s.getFullName());
-        tvMssv.setText("MSSV: " + s.getMssv());
-        tvInitial.setText(s.getInitial());
-
-        GradientDrawable bg = new GradientDrawable();
-        bg.setShape(GradientDrawable.OVAL);
-        bg.setColor(s.getAvatarBgColor() != 0 ? s.getAvatarBgColor() : ContextCompat.getColor(this, R.color.primary));
-        flAvatar.setBackground(bg);
-
-        StringBuilder classes=new StringBuilder();
-        for(ClassRoom cr:AttendanceRepository.getInstance().getClassesForStudent(studentId)) {
-            if(classes.length()>0)classes.append("\n");classes.append(cr.getName()).append(" • ").append(cr.getCode());
-        }
-        tvClass.setText(classes.length()==0?"Chưa thuộc lớp nào":classes.toString());
-
-        if (s.hasCardBarcode()) {
-            tvBarcodeCode.setText("* " + s.getCardBarcode() + " *");
-            tvBarcodeBadge.setText("Thẻ hợp lệ • Sẵn sàng quét");
-            tvBarcodeBadge.setBackgroundResource(R.drawable.bg_badge_present);
-            tvBarcodeBadge.setTextColor(ContextCompat.getColor(this, R.color.on_status_present_container));
-            btnLinkCard.setText("Đổi mã thẻ");
-        } else {
-            tvBarcodeCode.setText("[ Chưa gắn mã vạch ]");
-            tvBarcodeBadge.setText("Chưa liên kết thẻ sinh viên");
-            tvBarcodeBadge.setBackgroundResource(R.drawable.bg_badge_unchecked);
-            tvBarcodeBadge.setTextColor(ContextCompat.getColor(this, R.color.text_secondary));
-            btnLinkCard.setText(R.string.context_link_card);
-        }
-
-        // Load sample attendance history
+    private String value(String s){return s==null||s.isEmpty()?"Chưa cập nhật":s;}
+    private void loadStudentData(){
+        AttendanceRepository repo=AttendanceRepository.getInstance();Student student=repo.getStudentById(studentId);if(student==null){finish();return;}
+        tvName.setText(student.getFullName());tvMssv.setText("MSSV: "+student.getMssv());tvBirth.setText("Ngày sinh: "+value(student.getBirthDate()));tvCourse.setText("Niên khóa: "+value(student.getCourse()));tvGender.setText("Giới tính: "+value(student.getGender()));tvPhone.setText("Số điện thoại: "+value(student.getPhone()));StudentPhotos.show(avatar,student.getPhotoPath());
+        List<ClassRoom> enrolled=repo.getClassesForStudent(studentId);StringBuilder label=new StringBuilder();for(ClassRoom c:enrolled){if(label.length()>0)label.append("\n");label.append(c.getName());}tvClass.setText(label.length()==0?"Chưa thuộc lớp nào":"Lớp đang học: "+label);
+        ClassRoom main=repo.getClassById(student.getPrimaryClassId());
+        try{card.bind(student,main==null?null:main.getName());card.setVisibility(View.VISIBLE);cardError.setVisibility(View.GONE);}catch(IllegalArgumentException e){card.setVisibility(View.GONE);cardError.setVisibility(View.VISIBLE);cardError.setText("Không thể hiển thị thẻ. Vui lòng thử lại.");}
         llHistoryContainer.removeAllViews();
         List<AttendanceSession> sessions = AttendanceRepository.getInstance().getAllSessions();
         LayoutInflater inflater = LayoutInflater.from(this);

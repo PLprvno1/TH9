@@ -3,12 +3,26 @@ package com.example.th9.model;
 import java.io.Serializable;
 
 public class AttendanceSession implements Serializable {
+    private String scheduleId,plannedDate,plannedShift;
+    private Integer plannedStartMinute,plannedEndMinute;
+    public void setSchedule(String id,String date,String shift,Integer start,Integer end){scheduleId=id;plannedDate=date;plannedShift=shift;plannedStartMinute=start;plannedEndMinute=end;}
+    public String getScheduleId(){return scheduleId;}
+    public String getPlannedDate(){return plannedDate;}
+    public String getPlannedShift(){return plannedShift;}
+    public Integer getPlannedStartMinute(){return plannedStartMinute;}
+    public Integer getPlannedEndMinute(){return plannedEndMinute;}
+    public String getScheduleLabel(){return scheduleId==null?"Buổi ngoài lịch / dữ liệu cũ":"Theo lịch • "+("MORNING".equals(plannedShift)?"Sáng":"Chiều")+" • "+com.example.th9.data.ScheduleRules.time(plannedStartMinute)+"–"+com.example.th9.data.ScheduleRules.time(plannedEndMinute);}
     public enum SessionStatus {
         DRAFT, // Chưa mở
         OPEN,   // Đang mở
         CLOSED  // Đã kết thúc
     }
 
+    private String teacherId,teacherNameSnapshot,teacherUsernameSnapshot;
+    public void setTeacher(String id,String name,String username){teacherId=id;teacherNameSnapshot=name;teacherUsernameSnapshot=username;}
+    public String getTeacherId(){return teacherId;}
+    public String getTeacherNameSnapshot(){return teacherNameSnapshot==null?"Chưa có thông tin giảng viên":teacherNameSnapshot;}
+    public String getTeacherUsernameSnapshot(){return teacherUsernameSnapshot;}
     private String id;
     private String classId;
     private String title;

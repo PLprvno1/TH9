@@ -90,6 +90,17 @@
                 android:orientation="horizontal" />
         </HorizontalScrollView>
 
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btn_result_read_aloud"
+            style="@style/Widget.Material3.Button.TonalButton"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/spacing_lg"
+            android:layout_marginEnd="@dimen/spacing_lg"
+            android:text="@string/speech_read_result"
+            android:visibility="gone"
+            tools:visibility="visible" />
+
         <!-- Filter Chips Strip -->
         <HorizontalScrollView
             android:layout_width="match_parent"

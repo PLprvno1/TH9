@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="home_suggestions_title">Lớp sắp đến giờ học</string>
+    <string name="home_suggestions_hint">Các lớp có lịch học hôm nay</string>
+    <string name="home_suggestion_now">HÔM NAY · ĐANG TRONG GIỜ HỌC</string>
+    <string name="home_suggestion_start">Tạo buổi điểm danh</string>
+    <string name="home_extra_session">Tạo buổi ngoài lịch</string>
+    <string name="timetable_title">Thời khóa biểu</string>
+    <string name="timetable_week">Theo tuần</string>
+    <string name="timetable_manage">Quản lý lịch</string>
+    <string name="week_previous">Tuần trước</string>
+    <string name="week_next">Tuần sau</string>
+    <string name="filter_class">Lọc theo lớp</string>
+    <string name="filter_teacher">Lọc theo giảng viên</string>
+    <string name="schedule_add">Thêm lịch học</string>
+    <string name="schedule_edit">Sửa lịch học</string>
+    <string name="schedule_detail">Chi tiết lịch học</string>
+    <string name="schedule_archive">Lưu trữ lịch học</string>
+    <string name="schedule_roster">Xem lớp và danh sách sinh viên</string>
+    <string name="schedule_start_attendance">Bắt đầu điểm danh</string>
+    <string name="schedule_empty">Không có lịch phù hợp. Hãy chọn tuần khác hoặc đổi bộ lọc.</string>
+    <string name="schedule_save">Lưu lịch học</string>
+    <string name="schedule_shift">Ca học</string>
+    <string name="schedule_class">Lớp học</string>
+    <string name="schedule_from">Ngày bắt đầu</string>
+    <string name="schedule_until">Ngày kết thúc</string>
+    <string name="schedule_start">Giờ bắt đầu</string>
+    <string name="schedule_end">Giờ kết thúc</string>
+    <string name="schedule_days">Các thứ học trong tuần</string>
+    <string name="schedule_hint">Lịch học lặp lại trong khoảng ngày đã chọn. Ca sáng bắt đầu trước 12:00, ca chiều bắt đầu từ 12:00. Buổi điểm danh và danh sách sinh viên sẽ được tạo khi giảng viên bắt đầu điểm danh.</string>
+    <string name="schedule_today">Hôm nay</string>
+    <string name="schedule_this_week">Tuần này</string>
+</resources>

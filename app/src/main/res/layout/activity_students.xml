@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android" android:layout_width="match_parent" android:layout_height="match_parent" android:orientation="vertical" android:background="@color/background">
+    <com.google.android.material.appbar.MaterialToolbar android:id="@+id/toolbar_students" android:layout_width="match_parent" android:layout_height="?attr/actionBarSize" />
+    <com.google.android.material.textfield.TextInputLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_margin="16dp" android:hint="Tìm tên hoặc MSSV">
+        <com.google.android.material.textfield.TextInputEditText android:id="@+id/students_search" android:layout_width="match_parent" android:layout_height="wrap_content" android:inputType="text" />
+    </com.google.android.material.textfield.TextInputLayout>
+    <com.google.android.material.button.MaterialButton android:id="@+id/students_add" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginHorizontal="16dp" android:text="Thêm sinh viên" />
+    <com.google.android.material.button.MaterialButton android:id="@+id/students_import_csv" style="@style/Widget.Material3.Button.OutlinedButton" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginHorizontal="16dp" android:text="Nhập CSV" />
+    <com.google.android.material.button.MaterialButton android:id="@+id/students_verify" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginHorizontal="16dp" android:text="Quét kiểm tra thẻ" />
+    <TextView android:id="@+id/students_empty" android:layout_width="match_parent" android:layout_height="wrap_content" android:padding="24dp" android:text="Chưa có sinh viên. Nhấn Thêm sinh viên để tạo hồ sơ." />
+    <androidx.recyclerview.widget.RecyclerView android:id="@+id/students_list" android:layout_width="match_parent" android:layout_height="0dp" android:layout_weight="1" />
+</LinearLayout>

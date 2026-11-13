@@ -84,5 +84,15 @@
             android:textStyle="bold"
             tools:text="SV20210001" />
 
+        <androidx.appcompat.widget.AppCompatImageButton
+            android:id="@+id/btn_student_delete"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:layout_marginStart="4dp"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:contentDescription="@string/student_delete"
+            android:src="@drawable/ic_delete_student"
+            android:visibility="gone"
+            app:tint="@color/status_absent" />
     </LinearLayout>
 </com.google.android.material.card.MaterialCardView>

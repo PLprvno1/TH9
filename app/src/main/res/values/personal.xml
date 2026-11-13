@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="nav_personal">Cá nhân</string>
+    <string name="personal_account">Tiện ích tài khoản</string>
+    <string name="personal_username_label">Tên đăng nhập</string>
+    <string name="personal_role_label">Vai trò</string>
+    <string name="personal_active">Tài khoản đang hoạt động</string>
+    <string name="personal_history">Lịch sử điểm danh</string>
+    <string name="personal_settings">Cài đặt</string>
+    <string name="personal_logout">Đăng xuất</string>
+</resources>

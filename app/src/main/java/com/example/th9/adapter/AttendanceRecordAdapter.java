@@ -96,7 +96,7 @@ public class AttendanceRecordAdapter extends RecyclerView.Adapter<AttendanceReco
 
         // Source label
         if (record.getSource() != null) {
-            holder.tvSource.setText("• " + record.getSourceDisplayName()+(record.getEditedAt()==null?"":"\nChỉnh: "+AttendanceRepository.format(record.getEditedAt(),"dd/MM HH:mm")+" · "+record.getNote()));
+            holder.tvSource.setText("• " + record.getSourceDisplayName()+(record.getEditedAt()==null?"":"\nĐã cập nhật: "+AttendanceRepository.format(record.getEditedAt(),"dd/MM HH:mm")+" · "+record.getNote()));
             holder.tvSource.setVisibility(View.VISIBLE);
         } else {
             holder.tvSource.setVisibility(View.GONE);
@@ -134,6 +134,7 @@ public class AttendanceRecordAdapter extends RecyclerView.Adapter<AttendanceReco
                 break;
         }
 
+        holder.itemView.setTag(!com.example.th9.data.AttendanceRepository.getInstance().isAdmin()&&com.example.th9.data.AttendanceRepository.getInstance().canControlSession(record.getSessionId()));
         holder.itemView.setOnClickListener(v -> {
             if (clickListener != null) {
                 clickListener.onRecordClick(record, s);
@@ -175,7 +176,7 @@ public class AttendanceRecordAdapter extends RecyclerView.Adapter<AttendanceReco
         public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
             menu.setHeaderTitle(tvName.getText());
             menu.add(Menu.NONE, R.id.context_view_profile, 1, R.string.context_view_profile);
-            menu.add(Menu.NONE, R.id.context_change_status, 2, R.string.context_change_status);
+            if(Boolean.TRUE.equals(itemView.getTag()))menu.add(Menu.NONE, R.id.context_change_status, 2, R.string.context_change_status);
         }
     }
 }

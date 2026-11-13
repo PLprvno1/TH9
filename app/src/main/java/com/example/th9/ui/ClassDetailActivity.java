@@ -57,6 +57,23 @@ public class ClassDetailActivity extends com.example.th9.ui.DataActivity {
         setupToolbar();
         setupRecyclerView();
         setupListeners();
+        getSupportFragmentManager().setFragmentResultListener(ClassTeachersDialog.RESULT_UPDATED,this,(key,result)->{
+            if(classId.equals(result.getString("classId")))refreshAssignedTeachers();
+        });
+        if(AttendanceRepository.getInstance().isAdmin()){
+            btnCreateSession.setText("Quản lý lịch học");
+            btnCreateSession.setOnClickListener(v->{
+                com.example.th9.model.ClassSchedule schedule=AttendanceRepository.getInstance().getScheduleForClass(classId);
+                Intent form=new Intent(this,ScheduleFormActivity.class).putExtra(ScheduleFormActivity.EXTRA_FIXED_CLASS_ID,classId);
+                if(schedule!=null)form.putExtra(ScheduleDetailActivity.EXTRA_ID,schedule.id);
+                startActivity(form);
+            });
+        }else btnCreateSession.setText("Tạo buổi ngoài lịch");
+        btnAddStudent.setVisibility(View.GONE);
+        btnEmptyImport.setVisibility(View.GONE);
+        findViewById(R.id.btn_detail_assign_teachers).setVisibility(AttendanceRepository.getInstance().isAdmin()?View.VISIBLE:View.GONE);
+        findViewById(R.id.btn_detail_assign_teachers).setOnClickListener(v->ClassTeachersDialog.create(classId).show(getSupportFragmentManager(),"class_teachers"));
+        if(!AttendanceRepository.getInstance().isAdmin())for(int id:new int[]{R.id.btn_detail_add_student,R.id.btn_empty_add_student,R.id.btn_empty_import_csv})findViewById(id).setVisibility(View.GONE);
     }
 
     @Override
@@ -113,19 +130,12 @@ public class ClassDetailActivity extends com.example.th9.ui.DataActivity {
         });
 
         View.OnClickListener addStudentListener = v -> {
-            Intent intent = new Intent(ClassDetailActivity.this, StudentFormActivity.class);
-            intent.putExtra(StudentFormActivity.EXTRA_CLASS_ID, classId);
+            Intent intent = new Intent(ClassDetailActivity.this, ClassStudentSelectionActivity.class);
+            intent.putExtra(ClassStudentSelectionActivity.EXTRA_CLASS_ID, classId);
             startActivity(intent);
         };
         btnAddStudent.setOnClickListener(addStudentListener);
         btnEmptyAdd.setOnClickListener(addStudentListener);
-
-        View.OnClickListener importCsvListener = v -> {
-            Intent intent = new Intent(ClassDetailActivity.this, CsvImportPreviewActivity.class);
-            intent.putExtra(CsvImportPreviewActivity.EXTRA_CLASS_ID, classId);
-            startActivity(intent);
-        };
-        btnEmptyImport.setOnClickListener(importCsvListener);
 
         etSearch.addTextChangedListener(new TextWatcher() {
             @Override public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
@@ -144,9 +154,19 @@ public class ClassDetailActivity extends com.example.th9.ui.DataActivity {
             tvCode.setText(currentClass.getCode());
             tvNote.setText(currentClass.getNote());
             tvStudentCount.setText(currentClass.getStudentCount() + " " + getString(R.string.class_detail_students_count));
+            refreshAssignedTeachers();
         }
 
         filterAndSortStudents(etSearch != null ? etSearch.getText().toString() : "");
+    }
+
+    private void refreshAssignedTeachers(){
+        AttendanceRepository repo=AttendanceRepository.getInstance();TextView label=findViewById(R.id.tv_detail_assigned_teachers);
+        label.setVisibility(repo.isAdmin()?View.VISIBLE:View.GONE);if(!repo.isAdmin())return;
+        java.util.Set<String> assigned=new java.util.HashSet<>(repo.assignedTeacherIds(classId));
+        java.util.StringJoiner names=new java.util.StringJoiner("\n");
+        for(com.example.th9.model.Account teacher:repo.getTeachers())if(assigned.contains(teacher.id))names.add("• "+teacher.fullName+" ("+teacher.username+")"+(teacher.enabled?"":" • Đã khóa"));
+        label.setText(names.length()==0?getString(R.string.class_teachers_unassigned):getString(R.string.class_teachers_assigned,names.toString()));
     }
 
     private void filterAndSortStudents(String query) {
@@ -187,12 +207,16 @@ public class ClassDetailActivity extends com.example.th9.ui.DataActivity {
     @Override
     public boolean onCreateOptionsMenu(android.view.Menu menu){
         getMenuInflater().inflate(R.menu.menu_class_detail,menu);
-        menu.add(0,7001,10,"Sửa lớp");menu.add(0,7002,11,"Xóa lớp");return true;
+        menu.add(0,7601,1,"Thời khóa biểu của lớp");
+        if(AttendanceRepository.getInstance().isAdmin())menu.add(0,7602,2,"Thêm sinh viên");
+        if(AttendanceRepository.getInstance().isAdmin()){menu.add(0,7001,10,"Sửa lớp");menu.add(0,7002,11,"Xóa lớp");}return true;
     }
 
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         int id = item.getItemId();
+        if(id==7601){startActivity(new Intent(this,TimetableActivity.class).putExtra(TimetableActivity.EXTRA_CLASS_ID,classId));return true;}
+        if(id==7602){startActivity(new Intent(this,ClassStudentSelectionActivity.class).putExtra(ClassStudentSelectionActivity.EXTRA_CLASS_ID,classId));return true;}
         if(id==7001){Intent i=new Intent(this,ClassFormActivity.class);i.putExtra(ClassFormActivity.EXTRA_CLASS_ID,classId);startActivity(i);return true;}
         if(id==7002){new com.google.android.material.dialog.MaterialAlertDialogBuilder(this).setTitle("Xóa lớp?")
             .setMessage("Chỉ xóa được lớp chưa có buổi điểm danh.").setPositiveButton("Xóa",(d,w)->
@@ -207,11 +231,6 @@ public class ClassDetailActivity extends com.example.th9.ui.DataActivity {
             sortByName = false;
             Toast.makeText(this, "Đã sắp xếp danh sách theo MSSV", Toast.LENGTH_SHORT).show();
             filterAndSortStudents(etSearch.getText().toString());
-            return true;
-        } else if (id == R.id.action_import_csv) {
-            Intent intent = new Intent(this, CsvImportPreviewActivity.class);
-            intent.putExtra(CsvImportPreviewActivity.EXTRA_CLASS_ID, classId);
-            startActivity(intent);
             return true;
         }
         return super.onOptionsItemSelected(item);
@@ -238,11 +257,8 @@ public class ClassDetailActivity extends com.example.th9.ui.DataActivity {
             intent.putExtra(StudentFormActivity.EXTRA_CLASS_ID, classId);
             startActivity(intent);
             return true;
-        } else if (itemId == R.id.context_link_card) {
-            Intent intent = new Intent(this, StudentFormActivity.class);
-            intent.putExtra(StudentFormActivity.EXTRA_STUDENT_ID, student.getId());
-            intent.putExtra(StudentFormActivity.EXTRA_CLASS_ID,classId);
-            startActivity(intent);
+        } else if (itemId == 7401) {
+            startActivity(new Intent(this,StudentCardActivity.class).putExtra(StudentProfileActivity.EXTRA_STUDENT_ID,student.getId()));
             return true;
         } else if(itemId==7003){
             new com.google.android.material.dialog.MaterialAlertDialogBuilder(this).setTitle("Gỡ khỏi lớp?")

@@ -79,9 +79,9 @@ public class DocumentsUiTest {
             Thread.sleep(500);
         }
         String fixture="th9-import-"+tag+".csv";File source=new File(context.getExternalFilesDir(null),fixture);
-        try(OutputStream out=new FileOutputStream(source)){out.write(("\uFEFFmssv,ho_ten,ma_the\r\n00"+tag+",\"Lê, Bình\",RAW:"+tag+"\r\n").getBytes(StandardCharsets.UTF_8));}
+        try(OutputStream out=new FileOutputStream(source)){out.write(("\uFEFFho_ten,ngay_sinh,nien_khoa,gioi_tinh\r\n\"Lê, Bình\",01/01/2000,2022-2026,Nữ\r\n").getBytes(StandardCharsets.UTF_8));}
         shell("cp "+source.getAbsolutePath()+" /sdcard/Download/"+fixture);
-        try(ActivityScenario<CsvImportPreviewActivity> screen=ActivityScenario.launch(new Intent(context,CsvImportPreviewActivity.class).putExtra(CsvImportPreviewActivity.EXTRA_CLASS_ID,classroom.getId()))){
+        try(ActivityScenario<CsvImportPreviewActivity> screen=ActivityScenario.launch(new Intent(context,CsvImportPreviewActivity.class))){
             onView(withId(R.id.btn_csv_pick_file)).perform(click());
             waitNode(n->String.valueOf(n.getPackageName()).endsWith(".documentsui"));downloads();
             clickSystem(waitNode(n->text(n,fixture)));
@@ -89,8 +89,9 @@ public class DocumentsUiTest {
             while(!enabled.get()&&System.currentTimeMillis()<deadline){screen.onActivity(a->enabled.set(a.findViewById(R.id.btn_csv_confirm_import).isEnabled()));Thread.sleep(100);}
             if(!enabled.get())logTree(automation.getRootInActiveWindow());
             assertTrue("Valid CSV preview must enable import",enabled.get());onView(withId(R.id.btn_csv_confirm_import)).perform(click());
-            while(repo.findByMssv("00"+tag)==null&&System.currentTimeMillis()<deadline)Thread.sleep(100);
-            assertNotNull(repo.findByMssv("00"+tag));assertEquals("Lê, Bình",repo.findByMssv("00"+tag).getFullName());
+            Student imported=null;
+            while(imported==null&&System.currentTimeMillis()<deadline){for(Student candidate:repo.getAllStudents())if("Lê, Bình".equals(candidate.getFullName())){imported=candidate;break;}if(imported==null)Thread.sleep(100);}
+            assertNotNull(imported);assertTrue(imported.getMssv().startsWith("20222026"));assertNull(imported.getPrimaryClassId());
         }finally{
             shell("rm -f "+path+" /sdcard/Download/"+fixture);source.delete();
         }

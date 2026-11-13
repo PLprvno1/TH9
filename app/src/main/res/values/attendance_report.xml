@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="stats_report_title">Bảng điểm danh</string>
+    <string name="stats_report_legend">x: Có mặt · t: Đi trễ · Trống: Vắng hoặc chưa điểm danh</string>
+    <string name="stats_report_hint">Vuốt ngang xem ngày · Vuốt dọc xem sinh viên</string>
+    <string name="stats_report_scope">Bao gồm buổi đang mở và đã kết thúc.</string>
+    <string name="stats_report_export">Xuất Excel kết quả điểm danh</string>
+    <string name="stats_report_empty">Chưa có lớp học phù hợp.</string>
+    <string name="stats_report_no_sessions">Chưa có buổi đã mở trong khoảng thời gian này.</string>
+    <string name="stats_report_no_students">Lớp chưa có sinh viên.</string>
+    <string name="stats_report_count">%1$d sinh viên · %2$d buổi</string>
+    <string name="stats_report_preparing">Đang tạo tệp Excel…</string>
+    <string name="stats_report_saving">Đang lưu tệp Excel…</string>
+    <string name="stats_report_saved">Đã xuất Excel theo bảng đã chọn.</string>
+    <string name="stats_report_export_failed">Không thể xuất Excel. Vui lòng thử lại.</string>
+    <string name="stats_report_snapshot_missing">Tệp chờ xuất không còn. Hãy bấm xuất Excel lại.</string>
+</resources>

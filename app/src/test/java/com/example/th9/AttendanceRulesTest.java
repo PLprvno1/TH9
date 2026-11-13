@@ -16,19 +16,20 @@ public class AttendanceRulesTest {
         assertEquals("LATE",AttendanceRules.statusAt(threshold+60000,threshold));
         assertEquals("PRESENT",AttendanceRules.statusAt(threshold+60000,null));
     }
-    @Test public void csvPreservesZerosUnicodeCommasQuotesNewlinesAndOpaqueCard() throws Exception {
-        List<CsvTransfer.Row> rows=CsvTransfer.parse(new StringReader("\uFEFFmssv,ho_ten,ma_the\r\n0001,\"Nguyễn, \"\"An\"\"\r\nBình\",SV:00010001\r\n"));
-        assertEquals(1,rows.size());assertEquals("0001",rows.get(0).mssv);
-        assertEquals("Nguyễn, \"An\"\r\nBình",rows.get(0).name);assertEquals("SV:00010001",rows.get(0).card);
+    @Test public void csvPreservesUnicodeCommasQuotesNewlinesAndRegistrationFields() throws Exception {
+        List<CsvTransfer.Row> rows=CsvTransfer.parse(new StringReader("\uFEFFho_ten,ngay_sinh,nien_khoa,gioi_tinh\r\n\"Nguyễn, \"\"An\"\"\r\nBình\",01/02/2004,2022-2026,nữ\r\n"));
+        assertEquals(1,rows.size());assertEquals("Nguyễn, \"An\"\r\nBình",rows.get(0).name);
+        assertEquals("01/02/2004",rows.get(0).birthDate);assertEquals("2022–2026",rows.get(0).course);assertEquals("Nữ",rows.get(0).gender);
     }
-    @Test public void csvWithoutCardColumnDoesNotRequestCardChange() throws Exception {
-        List<CsvTransfer.Row> rows=CsvTransfer.parse(new StringReader("mssv,ho_ten\n001,An\n"));
-        assertFalse(rows.get(0).hasCardColumn);assertNull(rows.get(0).card);
+    @Test public void csvReadsRequiredRegistrationFields() throws Exception {
+        List<CsvTransfer.Row> rows=CsvTransfer.parse(new StringReader("ho_ten,ngay_sinh,nien_khoa,gioi_tinh\nAn,01/01/2000,2022–2026,Nam\n"));
+        assertEquals("An",rows.get(0).name);assertEquals("01/01/2000",rows.get(0).birthDate);
+        assertEquals("2022–2026",rows.get(0).course);assertEquals("Nam",rows.get(0).gender);
     }
     @Test(expected=IllegalArgumentException.class) public void csvRejectsMissingHeader() throws Exception {
         CsvTransfer.parse(new StringReader("id,name\n001,An\n"));
     }
     @Test public void malformedRowIsPreviewError() throws Exception {
-        assertNotNull(CsvTransfer.parse(new StringReader("mssv,ho_ten\n001,An,extra\n")).get(0).error);
+        assertNotNull(CsvTransfer.parse(new StringReader("ho_ten,ngay_sinh,nien_khoa,gioi_tinh\nAn,01/01/2000,2022-2026,Nam,extra\n")).get(0).error);
     }
 }

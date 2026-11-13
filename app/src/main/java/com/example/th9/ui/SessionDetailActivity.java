@@ -109,15 +109,12 @@ public class SessionDetailActivity extends com.example.th9.ui.DataActivity {
         btnOpen.setOnClickListener(v -> {
             new MaterialAlertDialogBuilder(this)
                     .setTitle("Mở buổi điểm danh?")
-                    .setMessage("Bạn có muốn kích hoạt buổi điểm danh này để bắt đầu quét thẻ sinh viên?")
+                    .setMessage("Bạn có muốn bắt đầu điểm danh cho buổi này không?")
                     .setPositiveButton("Mở buổi", (dialog, which) -> {
-                        AttendanceSession active=AttendanceRepository.getInstance().getActiveSession();
-                        if(active!=null){showActive(active);return;}
                         com.example.th9.data.Tasks.run(this,btnOpen,()->{
                             AttendanceRepository.getInstance().openSession(sessionId);return true;
                         },ok->loadSessionData(),error->{
-                            AttendanceSession opened=AttendanceRepository.getInstance().getActiveSession();
-                            if(opened!=null)showActive(opened);else Toast.makeText(this,error,Toast.LENGTH_LONG).show();
+                            Toast.makeText(this,error,Toast.LENGTH_LONG).show();
                         });
                     })
                     .setNegativeButton("Hủy", null)
@@ -145,9 +142,9 @@ public class SessionDetailActivity extends com.example.th9.ui.DataActivity {
             int unchecked = AttendanceRepository.getInstance().getUncheckedCount(sessionId);
             new MaterialAlertDialogBuilder(this)
                     .setTitle("Kết thúc buổi điểm danh?")
-                    .setMessage("Hiện còn " + unchecked + " sinh viên CHƯA ĐIỂM DANH.\n\n"
-                            + "Khi kết thúc, tất cả " + unchecked + " sinh viên này sẽ được tự động ghi nhận trạng thái là VẮNG MẶT.\n\n"
-                            + "Bạn có chắc chắn muốn kết thúc buổi điểm danh không?")
+                    .setMessage("Còn " + unchecked + " sinh viên chưa điểm danh.\n\n"
+                            + "Khi kết thúc buổi, các bạn này sẽ được ghi nhận là vắng mặt.\n\n"
+                            + "Bạn có muốn tiếp tục không?")
                     .setPositiveButton("Kết thúc ngay", (dialog, which) -> {
                         com.example.th9.data.Tasks.run(this,btnFinish,()->{
                             AttendanceRepository.getInstance().finishSession(sessionId);return true;
@@ -170,13 +167,15 @@ public class SessionDetailActivity extends com.example.th9.ui.DataActivity {
         session = AttendanceRepository.getInstance().getSessionById(sessionId);
         if (session == null) {finish();return;}
 
+        boolean control=!AttendanceRepository.getInstance().isAdmin()&&AttendanceRepository.getInstance().canControlSession(sessionId);
+        for(View button:new View[]{btnOpen,btnScan,btnManual,btnFinish})button.setVisibility(control?View.VISIBLE:View.GONE);
         tvTitle.setText(session.getTitle());
         ClassRoom cr = AttendanceRepository.getInstance().getClassById(session.getClassId());
         if (cr != null) {
             tvClass.setText(AttendanceRepository.getInstance().sessionClassLabel(session));
         }
-        tvSchedule.setText(session.getStartTime() + " • " + session.getDate());
-        tvExpected.setText("Sĩ số: " + session.getExpectedCount() + " SV");
+        tvSchedule.setText(session.getStartTime() + " • " + session.getDate()+"\n"+session.getScheduleLabel()+"\nGiảng viên: "+session.getTeacherNameSnapshot());
+        tvExpected.setText("Sĩ số: " + session.getExpectedCount() + " sinh viên");
 
         if (session.isEnableLateThreshold() && session.getLateThresholdTime() != null) {
             tvLateRule.setText("Quy tắc: Sau " + session.getLateThresholdTime() + " tính đi muộn");
@@ -225,7 +224,7 @@ public class SessionDetailActivity extends com.example.th9.ui.DataActivity {
 
                 tvActivePresent.setText(present + " Có mặt");
                 tvActiveLate.setText(late + " Đi muộn");
-                tvActiveUnchecked.setText(unchecked + " Chưa điểm");
+                tvActiveUnchecked.setText(unchecked + " Chưa điểm danh");
                 break;
 
             case CLOSED:
@@ -243,18 +242,11 @@ public class SessionDetailActivity extends com.example.th9.ui.DataActivity {
                 int fTotal = session.getExpectedCount();
                 int fPct = fTotal > 0 ? ((fPresent + fLate) * 100 / fTotal) : 0;
 
-                tvFinishedSummary.setText("• Có mặt: " + fPresent + "  • Đi muộn: " + fLate + "  • Vắng mặt: " + fAbsent + "\n• Tỷ lệ tham gia đạt: " + fPct + "%");
+                tvFinishedSummary.setText("• Có mặt: " + fPresent + "  • Đi muộn: " + fLate + "  • Vắng mặt: " + fAbsent + "\n• Tỷ lệ chuyên cần: " + fPct + "%");
                 break;
         }
     }
-    private void showActive(AttendanceSession active){
-        new MaterialAlertDialogBuilder(this).setTitle("Đã có buổi đang mở")
-            .setMessage(active.getTitle()+"\n"+AttendanceRepository.getInstance().sessionClassLabel(active))
-            .setPositiveButton("Tiếp tục buổi đang mở",(d,w)->{
-                Intent i=new Intent(this,SessionDetailActivity.class);i.putExtra(EXTRA_SESSION_ID,active.getId());startActivity(i);
-            }).setNegativeButton("Đóng",null).show();
-    }
-    @Override public boolean onCreateOptionsMenu(android.view.Menu menu){menu.add(0,7101,0,"Sửa buổi chưa mở");return true;}
+    @Override public boolean onCreateOptionsMenu(android.view.Menu menu){menu.add(0,7101,0,"Sửa buổi chưa mở").setVisible(!AttendanceRepository.getInstance().isAdmin()&&AttendanceRepository.getInstance().canControlSession(sessionId));return true;}
     @Override public boolean onOptionsItemSelected(android.view.MenuItem item){
         if(item.getItemId()==7101){
             if(session!=null&&session.getStatus()==AttendanceSession.SessionStatus.DRAFT){Intent i=new Intent(this,SessionFormActivity.class);

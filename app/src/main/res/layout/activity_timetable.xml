@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android" xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent" android:layout_height="match_parent" android:orientation="vertical" android:background="@color/background">
+    <com.google.android.material.appbar.MaterialToolbar android:id="@+id/toolbar_timetable" android:layout_width="match_parent" android:layout_height="?attr/actionBarSize" app:title="@string/timetable_title" app:navigationIcon="@drawable/ic_arrow_back" />
+    <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical" android:paddingHorizontal="16dp">
+        <com.google.android.material.button.MaterialButtonToggleGroup android:id="@+id/schedule_modes" android:layout_width="match_parent" android:layout_height="wrap_content" app:singleSelection="true" app:selectionRequired="true" app:checkedButton="@id/mode_week">
+            <com.google.android.material.button.MaterialButton android:id="@+id/mode_week" style="?attr/materialButtonOutlinedStyle" android:layout_width="0dp" android:layout_weight="1" android:layout_height="wrap_content" android:text="@string/timetable_week" />
+            <com.google.android.material.button.MaterialButton android:id="@+id/mode_rules" style="?attr/materialButtonOutlinedStyle" android:layout_width="0dp" android:layout_weight="1" android:layout_height="wrap_content" android:text="@string/timetable_manage" />
+        </com.google.android.material.button.MaterialButtonToggleGroup>
+        <LinearLayout android:id="@+id/week_navigation" android:layout_width="match_parent" android:layout_height="wrap_content" android:gravity="center_vertical">
+            <com.google.android.material.button.MaterialButton android:id="@+id/week_previous" style="@style/Widget.MaterialComponents.Button.TextButton" android:layout_width="56dp" android:layout_height="48dp" android:text="‹" android:contentDescription="@string/week_previous" />
+            <TextView android:id="@+id/week_label" android:layout_width="0dp" android:layout_weight="1" android:layout_height="wrap_content" android:gravity="center" android:textColor="@color/text_primary" android:textStyle="bold" />
+            <com.google.android.material.button.MaterialButton android:id="@+id/week_next" style="@style/Widget.MaterialComponents.Button.TextButton" android:layout_width="56dp" android:layout_height="48dp" android:text="›" android:contentDescription="@string/week_next" />
+        </LinearLayout>
+        <LinearLayout android:id="@+id/timetable_filters" android:layout_width="match_parent" android:layout_height="wrap_content">
+            <Spinner android:id="@+id/schedule_class_filter" android:layout_width="0dp" android:layout_weight="1" android:layout_height="48dp" android:contentDescription="@string/filter_class" />
+            <Spinner android:id="@+id/schedule_teacher_filter" android:layout_width="0dp" android:layout_weight="1" android:layout_height="48dp" android:contentDescription="@string/filter_teacher" />
+        </LinearLayout>
+        <com.google.android.material.button.MaterialButton android:id="@+id/schedule_add" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="@string/schedule_add" app:icon="@drawable/ic_add" />
+    </LinearLayout>
+    <TextView android:id="@+id/schedule_empty" android:layout_width="match_parent" android:layout_height="wrap_content" android:padding="32dp" android:gravity="center" android:text="@string/schedule_empty" android:textColor="@color/text_secondary" />
+    <androidx.recyclerview.widget.RecyclerView android:id="@+id/schedule_list" android:layout_width="match_parent" android:layout_height="0dp" android:layout_weight="1" android:clipToPadding="false" android:padding="16dp" />
+</LinearLayout>

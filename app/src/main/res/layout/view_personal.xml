@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.core.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android" xmlns:app="http://schemas.android.com/apk/res-auto" android:id="@+id/view_personal" android:layout_width="match_parent" android:layout_height="match_parent" android:visibility="gone" android:fillViewport="true">
+    <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical" android:padding="20dp">
+        <com.google.android.material.card.MaterialCardView android:layout_width="match_parent" android:layout_height="wrap_content" app:cardCornerRadius="20dp" app:cardBackgroundColor="@color/surface" app:strokeColor="@color/divider" app:strokeWidth="1dp">
+            <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical" android:padding="24dp">
+                <ImageView android:layout_width="64dp" android:layout_height="64dp" android:src="@drawable/ic_person" android:background="@drawable/bg_avatar_circle" android:padding="12dp" app:tint="@color/primary" android:importantForAccessibility="no" />
+                <TextView android:id="@+id/personal_name" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="16dp" android:textSize="24sp" android:textStyle="bold" android:textColor="@color/text_primary" />
+                <TextView android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="4dp" android:text="@string/personal_active" android:textColor="@color/status_present" />
+                <View android:layout_width="match_parent" android:layout_height="1dp" android:layout_marginVertical="20dp" android:background="@color/divider" />
+                <TextView android:layout_width="match_parent" android:layout_height="wrap_content" android:text="@string/personal_username_label" android:textColor="@color/text_secondary" />
+                <TextView android:id="@+id/personal_username" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="4dp" android:textSize="16sp" android:textStyle="bold" android:textColor="@color/text_primary" />
+                <TextView android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="16dp" android:text="@string/personal_role_label" android:textColor="@color/text_secondary" />
+                <TextView android:id="@+id/personal_role" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="4dp" android:textSize="16sp" android:textStyle="bold" android:textColor="@color/primary" />
+            </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
+        <TextView android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="24dp" android:layout_marginBottom="8dp" android:text="@string/personal_account" android:textSize="18sp" android:textStyle="bold" android:textColor="@color/text_primary" />
+        <com.google.android.material.button.MaterialButton android:id="@+id/personal_history" style="@style/Widget.Material3.Button.OutlinedButton" android:layout_width="match_parent" android:layout_height="wrap_content" android:minHeight="56dp" android:text="@string/personal_history" app:icon="@drawable/ic_history" app:iconGravity="textStart" />
+        <com.google.android.material.button.MaterialButton android:id="@+id/personal_settings" style="@style/Widget.Material3.Button.OutlinedButton" android:layout_width="match_parent" android:layout_height="wrap_content" android:minHeight="56dp" android:text="@string/personal_settings" app:icon="@drawable/ic_settings" app:iconGravity="textStart" />
+        <com.google.android.material.button.MaterialButton android:id="@+id/personal_logout" style="@style/Widget.Material3.Button.TextButton" android:layout_width="match_parent" android:layout_height="wrap_content" android:minHeight="56dp" android:layout_marginTop="8dp" android:text="@string/personal_logout" android:textColor="@color/status_absent" />
+    </LinearLayout>
+</androidx.core.widget.NestedScrollView>
